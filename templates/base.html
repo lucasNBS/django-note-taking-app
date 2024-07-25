@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="{% static 'css/output.css' %}" />
+    <title>Notes</title>
+  </head>
+  <body class="font-sans">
+    <div class="flex min-h-screen items-stretch">
+      <aside
+        class="flex flex-col justify-start items-start gap-3 grow-0 bg-gray-300 min-w-max py-8 pl-4 pr-8"
+      >
+        <div class="flex gap-2 items-center ml-1">
+          <img
+            class="rounded-full"
+            src="/media/images/profile.jpg"
+            alt="Profile picture"
+          />
+          <div class="flex flex-col">
+            <span
+              class="text-sm font-bold text-gray-700 text-ellipsis overflow-hidden whitespace-nowrap max-w-60"
+              >Lucas Nunes B. S.</span
+            >
+            <span
+              class="text-xs text-gray-500 text-ellipsis overflow-hidden whitespace-nowrap max-w-64"
+              >lucasnunesbarretosampaio@gmail.com</span
+            >
+          </div>
+        </div>
+        <div class="w-full h-0.5 bg-gray-400 opacity-25"></div>
+        <div class="ml-1">
+          <ul class="flex flex-col gap-2 text-sm text-gray-700">
+            <li>
+              <span
+                ><i class="fa fa-file-text-o" aria-hidden="true"></i> All
+                Documents</span
+              >
+            </li>
+            <li>
+              <span
+                ><i class="fa fa-star-o" aria-hidden="true"></i> Starred</span
+              >
+            </li>
+            <li>
+              <span
+                ><i class="fa fa-trash-o" aria-hidden="true"></i> Trash</span
+              >
+            </li>
+          </ul>
+        </div>
+        <div class="flex flex-col w-full">
+          <div class="flex justify-between items-center w-full">
+            <span class="text-sm text-gray-700 font-bold">Folders</span>
+            <i class="fa fa-plus" aria-hidden="true"></i>
+          </div>
+          <ul class="mx-1">
+            <li>
+              <span class="text-sm text-gray-700"
+                ><i class="fa fa-folder-o" aria-hidden="true"></i> General</span
+              >
+            </li>
+          </ul>
+        </div>
+      </aside>
+      <main class="grow bg-gray-200 p-8">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </body>
+</html>
