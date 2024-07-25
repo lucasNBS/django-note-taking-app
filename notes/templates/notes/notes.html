@@ -1,0 +1,3 @@
+{% extends 'base.html' %} {% block content %} {% for note in page_obj %}
+<a href="{% url 'detail' note.id %}">{{ note.title }}</a>
+{% endfor %} {% endblock %}
