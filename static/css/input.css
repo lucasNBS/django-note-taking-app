@@ -5,3 +5,7 @@
 a.w-fit.z-10:hover ~ div.opacity-0 {
   opacity: 1;
 }
+
+[data-content] > * {
+  white-space: pre-wrap;
+}
