@@ -38,9 +38,9 @@
         <nav class="ml-1">
           <ul class="flex flex-col gap-2 text-sm text-gray-700">
             <li>
-              <span
+              <a href="{% url 'list' %}"
                 ><i class="fa fa-file-text" aria-hidden="true"></i> All
-                Documents</span
+                Documents</a
               >
             </li>
             <li>
@@ -50,7 +50,9 @@
               <span><i class="fa fa-star" aria-hidden="true"></i> Starred</span>
             </li>
             <li>
-              <span><i class="fa fa-trash" aria-hidden="true"></i> Trash</span>
+              <a href="{% url 'list-deleted' %}"
+                ><i class="fa fa-trash" aria-hidden="true"></i> Trash</a
+              >
             </li>
           </ul>
         </nav>

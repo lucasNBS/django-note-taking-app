@@ -1,7 +1,10 @@
-const deleteButtons = document.querySelectorAll("[data-button-delete]");
+const actionButtons = document.querySelectorAll("[data-button-modal]");
 const background = document.querySelector("[data-modal-background]");
 const closeModal = document.querySelector("[data-close-modal]");
 const modal = document.querySelector("[data-modal]");
+
+const modalTitle = document.querySelector("#modal-title");
+const modalText = document.querySelector("#modal-text");
 
 const modalForm = document.querySelector("[data-modal-form]");
 const cancelButton = document.querySelector("[data-form-cancel]");
@@ -11,12 +14,14 @@ function handleCloseModal() {
   background.classList.remove("z-50");
 }
 
-deleteButtons.forEach((button) => {
+actionButtons.forEach((button) => {
   button.addEventListener("click", () => {
     background.classList.remove("-z-10");
     background.classList.add("z-50");
+    modalTitle.innerText = button.dataset.modalTitle;
+    modalText.innerText = button.dataset.modalText;
 
-    modalForm.setAttribute("action", `/notes/delete/${button.dataset.noteId}`);
+    modalForm.setAttribute("action", `${button.dataset.noteId}`);
   });
 });
 

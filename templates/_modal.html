@@ -11,10 +11,8 @@
     <form data-modal-form method="post" class="flex flex-col items-center">
       {% csrf_token %}
 
-      <h2 class="text-2xl font-bold mb-4">Confirm Delete</h2>
-      <p class="text-base text-center">
-        Do you really want to delete this item?
-      </p>
+      <h2 id="modal-title" class="text-2xl font-bold mb-4"></h2>
+      <p id="modal-text" class="text-base text-center"></p>
 
       <div class="flex gap-4 mt-8">
         <button
