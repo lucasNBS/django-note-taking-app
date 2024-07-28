@@ -9,6 +9,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
     />
     <link rel="stylesheet" href="{% static 'css/output.css' %}" />
+    {% block head %} {% endblock %}
     <title>Notes</title>
   </head>
   <body class="font-sans">
@@ -34,26 +35,25 @@
           </div>
         </div>
         <div class="w-full h-0.5 bg-gray-400 opacity-25"></div>
-        <div class="ml-1">
+        <nav class="ml-1">
           <ul class="flex flex-col gap-2 text-sm text-gray-700">
             <li>
               <span
-                ><i class="fa fa-file-text-o" aria-hidden="true"></i> All
+                ><i class="fa fa-file-text" aria-hidden="true"></i> All
                 Documents</span
               >
             </li>
             <li>
-              <span
-                ><i class="fa fa-star-o" aria-hidden="true"></i> Starred</span
-              >
+              <span><i class="fa fa-users" aria-hidden="true"></i> Shared</span>
             </li>
             <li>
-              <span
-                ><i class="fa fa-trash-o" aria-hidden="true"></i> Trash</span
-              >
+              <span><i class="fa fa-star" aria-hidden="true"></i> Starred</span>
+            </li>
+            <li>
+              <span><i class="fa fa-trash" aria-hidden="true"></i> Trash</span>
             </li>
           </ul>
-        </div>
+        </nav>
         <div class="flex flex-col w-full">
           <div class="flex justify-between items-center w-full">
             <span class="text-sm text-gray-700 font-bold">Folders</span>
@@ -62,7 +62,7 @@
           <ul class="mx-1">
             <li>
               <span class="text-sm text-gray-700"
-                ><i class="fa fa-folder-o" aria-hidden="true"></i> General</span
+                ><i class="fa fa-folder" aria-hidden="true"></i> General</span
               >
             </li>
           </ul>
@@ -72,5 +72,6 @@
         {% block content %}{% endblock %}
       </main>
     </div>
+    {% block body %} {% endblock %}
   </body>
 </html>

@@ -9,12 +9,23 @@ class CreateNoteView(CreateView):
   success_url = reverse_lazy('list')
   form_class = NoteForm
 
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context["type"] = "Create"
+    return context
+
 class UpdateNoteView(UpdateView):
   model = Note
   pk_url_kwarg = 'id'
   template_name = 'notes/form.html'
   success_url = reverse_lazy('list')
   form_class = NoteForm
+
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context["type"] = "Update"
+    return context
+
 
 class DeleteNoteView(DeleteView):
   model = Note
@@ -31,10 +42,3 @@ class ListNoteView(ListView):
   model = Note
   template_name = 'notes/notes.html'
   paginate_by = 20
-
-  def get_context_data(self, **kwargs):
-    context = super().get_context_data(**kwargs)
-
-    print(context)
-
-    return context

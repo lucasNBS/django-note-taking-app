@@ -1,0 +1,24 @@
+<header class="flex justify-between">
+  <div class="flex items-center gap-4">
+    <div class="flex gap-6">
+      {% if page_obj.has_previous %}
+      <a class="text-gray-400" href="?page={{ page_obj.previous_page_number }}"
+        ><i class="fa fa-angle-left fa-2x" aria-hidden="true"></i
+      ></a>
+      {% else %}
+      <span class="text-gray-300"
+        ><i class="fa fa-angle-left fa-2x" aria-hidden="true"></i
+      ></span>
+      {% endif %} {% if page_obj.has_next %}
+      <a class="text-gray-400" href="?page={{ page_obj.next_page_number }}"
+        ><i class="fa fa-angle-right fa-2x" aria-hidden="true"></i
+      ></a>
+      {% else %}
+      <span class="text-gray-300"
+        ><i class="fa fa-angle-right fa-2x" aria-hidden="true"></i
+      ></span>
+      {% endif %}
+    </div>
+    <h1 class="font-bold text-2xl">General</h1>
+  </div>
+</header>

@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+a.w-fit.z-10:hover ~ div.opacity-0 {
+  opacity: 1;
+}

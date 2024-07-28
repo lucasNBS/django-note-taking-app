@@ -1,0 +1,25 @@
+<article class="flex flex-col bg-gray-100 p-4 rounded-lg gap-2 relative">
+  <a class="w-fit z-10" href="{% url 'detail' note.id %}">
+    <h2
+      class="font-bold text-xl max-h-20 capitalize overflow-hidden w-fit transition-transform hover:scale-110"
+    >
+      {{ note.title }}
+    </h2>
+  </a>
+  <div class="opacity-0 hover:opacity-100 absolute w-full h-full left-0 top-0">
+    <div class="flex gap-2 py-2 px-3 absolute right-0 top-0">
+      <a
+        class="transition-transform hover:scale-110"
+        href="{% url 'update' note.id %}"
+        ><i class="fa fa-pencil-square-o text-gray-700" aria-hidden="true"></i
+      ></a>
+      <span
+        data-note-id="{{ note.id }}"
+        data-button-delete
+        class="cursor-pointer transition-transform hover:scale-110"
+        ><i class="fa fa-trash text-gray-700" aria-hidden="true"></i
+      ></span>
+    </div>
+  </div>
+  <p class="text-xs max-h-48 overflow-hidden">{{ note.content }}</p>
+</article>

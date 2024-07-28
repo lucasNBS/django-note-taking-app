@@ -1,3 +1,22 @@
-{% extends 'base.html' %} {% block content %} {% for note in page_obj %}
-<a href="{% url 'detail' note.id %}">{{ note.title }}</a>
-{% endfor %} {% endblock %}
+{% extends 'base.html' %} {% load static %} {% block head %}
+<script src="{% static 'js/confirm_delete.js' %}" defer></script>
+{% endblock %} {% block content %}
+
+<div
+  class="flex w-full justify-between pb-3 border-b-2 border-b-gray-300 border-opacity-75"
+>
+  {% include 'notes/_pagination.html' %}
+
+  <a href="{% url 'create' %}" class="flex gap-0.5 text-gray-700">
+    <i class="fa fa-plus" aria-hidden="true"></i>
+    <i class="fa fa-file-text" aria-hidden="true"></i>
+  </a>
+</div>
+
+<section class="pt-4 grid gap-2 xl:grid-cols-4 md:grid-cols-3 sm: grid-cols-2">
+  {% for note in page_obj %}
+  <div>{% include 'notes/_card.html' %}</div>
+  {% endfor %}
+</section>
+
+{% endblock %} {% block body %} {% include '_modal.html' %} {% endblock %}

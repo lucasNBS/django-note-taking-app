@@ -1,6 +1,23 @@
 {% extends 'base.html' %} {% block content %}
-<form method="post">
-  {% csrf_token %} {{ form.title }} {{ form.content }}
-  <button type="submit">Send</button>
+<a href="/notes"
+  ><i class="fa fa-chevron-left" aria-hidden="true"></i> Voltar</a
+>
+<h1 class="text-3xl capitalize font-bold mt-4">{{ type }} Note</h1>
+<form method="post" class="flex flex-col gap-4 mt-4">
+  {% csrf_token %}
+  <div class="flex flex-col">
+    <label class="text-lg capitalize font-bold">Title</label>
+    {{ form.title }}
+  </div>
+  <div class="flex flex-col">
+    <label class="text-lg capitalize font-bold">Content</label>
+    {{ form.content }}
+  </div>
+  <button
+    class="p-2 bg-gray-700 text-gray-100 rounded transition-colors hover:bg-gray-800 focus-visible:bg-gray-800"
+    type="submit"
+  >
+    Save
+  </button>
 </form>
 {% endblock %}
