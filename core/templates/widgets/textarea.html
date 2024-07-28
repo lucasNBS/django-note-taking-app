@@ -1,0 +1,9 @@
+<label class="text-lg capitalize font-bold">{{ widget.label }}</label>
+<textarea
+  class="resize-none p-3 min-h-96 rounded"
+  name="{{ widget.name }}"
+  id="{{ widget.attrs.id }}"
+  required="{{ widget.required }}"
+>
+{% if widget.value is not None %}{{ widget.value }}{% endif %}</textarea
+>
