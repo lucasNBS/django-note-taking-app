@@ -10,7 +10,6 @@ class InputField(forms.TextInput):
   def get_context(self, name, value, attrs):
     context = super().get_context(name, value, attrs)
     context["widget"]["label"] = self.label
-    print(context)
     return context
 
 class Textarea(forms.Textarea):
