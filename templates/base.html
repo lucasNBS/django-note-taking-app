@@ -47,7 +47,9 @@
               <span><i class="fa fa-users" aria-hidden="true"></i> Shared</span>
             </li>
             <li>
-              <span><i class="fa fa-star" aria-hidden="true"></i> Starred</span>
+              <a href="{% url 'favorites' %}"
+                ><i class="fa fa-star" aria-hidden="true"></i> Starred</a
+              >
             </li>
             <li>
               <a href="{% url 'list-deleted' %}"

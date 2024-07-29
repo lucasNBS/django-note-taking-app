@@ -23,3 +23,9 @@ class NoteForm(forms.ModelForm):
     if len(description) > 200:
       raise ValidationError("Max length is 200")
     return description
+
+class FavoriteNoteForm(forms.ModelForm):
+  
+  class Meta:
+    model = Note
+    fields = ['is_liked',]

@@ -18,6 +18,40 @@
         ><i class="fa fa-undo text-gray-700" aria-hidden="true"></i
       ></span>
       {% else %}
+      <form
+        data-favorite-note
+        action="{% url 'favorite' note.id %}"
+        method="post"
+      >
+        {% csrf_token %} {% if note.is_liked %}
+        <input
+          class="invisible"
+          type="checkbox"
+          name="is_liked"
+          id="id_is_liked"
+          checked
+        />
+        {% else %}
+        <input
+          class="invisible"
+          type="checkbox"
+          name="is_liked"
+          id="id_is_liked"
+        />
+        {% endif %} {% if note.is_liked %}
+        <i
+          data-star
+          class="fa fa-star text-yellow-600 cursor-pointer"
+          aria-hidden="true"
+        ></i>
+        {% else %}
+        <i
+          data-star
+          class="fa fa-star-o text-gray-700 cursor-pointer"
+          aria-hidden="true"
+        ></i>
+        {% endif %}
+      </form>
       <a
         class="transition-transform hover:scale-110"
         href="{% url 'update' note.id %}"

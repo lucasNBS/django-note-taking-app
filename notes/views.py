@@ -1,8 +1,9 @@
+from django.db.models.query import QuerySet
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DetailView, DeleteView, ListView
 from notes.models import Note
-from notes.forms import NoteForm
+from notes.forms import NoteForm, FavoriteNoteForm
 
 class CreateNoteView(CreateView):
   model = Note
@@ -62,3 +63,19 @@ def restore_note_view(request, id):
   note = Note.all_objects.get(id=id)
   note.restore()
   return redirect('list')
+
+class FavoriteNoteView(UpdateView):
+  model = Note
+  pk_url_kwarg = 'id'
+  template_name = 'notes/form.html'
+  success_url = reverse_lazy('list')
+  form_class = FavoriteNoteForm
+
+class ListFavoriteNote(ListView):
+  model = Note
+  template_name = 'notes/notes.html'
+  paginate_by = 20
+
+  def get_queryset(self):
+    qs = self.model.objects.filter(is_liked=True)
+    return qs
