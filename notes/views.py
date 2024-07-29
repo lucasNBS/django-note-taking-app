@@ -44,11 +44,13 @@ class ListNoteView(ListView):
   model = Note
   template_name = 'notes/notes.html'
   paginate_by = 20
+  title = "All Notes"
 
 class ListDeletedNoteView(ListView):
   model = Note
   template_name = 'notes/notes.html'
   paginate_by = 20
+  title = "Trash"
 
   def get_queryset(self):
     qs = self.model.all_objects.filter(is_deleted=True)
@@ -75,6 +77,7 @@ class ListFavoriteNote(ListView):
   model = Note
   template_name = 'notes/notes.html'
   paginate_by = 20
+  title = "Starred"
 
   def get_queryset(self):
     qs = self.model.objects.filter(is_liked=True)

@@ -20,7 +20,7 @@
       {% else %}
       <form
         data-favorite-note
-        action="{% url 'favorite' note.id %}"
+        action="{% url 'starred' note.id %}"
         method="post"
       >
         {% csrf_token %} {% if note.is_liked %}

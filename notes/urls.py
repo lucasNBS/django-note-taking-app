@@ -8,7 +8,7 @@ urlpatterns = [
   path("<int:id>", DetailNoteView.as_view(), name='detail'),
   path("", ListNoteView.as_view(), name='list'),
   path("restore/<int:id>", restore_note_view, name='restore'),
-  path("favorite/<int:id>", FavoriteNoteView.as_view(), name='favorite'),
-  path("favorites", ListFavoriteNote.as_view(), name='favorites'),
+  path("starred/<int:id>", FavoriteNoteView.as_view(), name='starred'),
+  path("starred", ListFavoriteNote.as_view(), name='starreds'),
   path("trash", ListDeletedNoteView.as_view(), name='list-deleted'),
 ]
