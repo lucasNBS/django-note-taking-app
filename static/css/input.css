@@ -9,3 +9,16 @@ a.w-fit.z-10:hover ~ div.opacity-0 {
 [data-content] > * {
   white-space: pre-wrap;
 }
+
+#filters-container {
+  height: 72px;
+  overflow: hidden;
+  transition: all 200ms linear;
+}
+
+#filters-container.close {
+  height: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  transform: translateY(-2px);
+}

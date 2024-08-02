@@ -1,20 +1,39 @@
 {% extends 'base.html' %} {% load static %} {% block head %}
 <script src="{% static 'js/modal.js' %}" defer></script>
 <script src="{% static 'js/favorite_note.js' %}" defer></script>
+<script src="{% static 'js/filters.js' %}" defer></script>
 {% endblock %} {% block content %}
 
-<div
-  class="flex w-full justify-between pb-3 border-b-2 border-b-gray-300 border-opacity-75"
+<header
+  class="flex w-full justify-between border-b-2 border-b-gray-300 border-opacity-75 relative z-20 p-8 pb-3 bg-gray-200"
 >
   {% include 'notes/_pagination.html' %}
 
-  <a href="{% url 'create' %}" class="flex gap-0.5 text-gray-700">
-    <i class="fa fa-plus" aria-hidden="true"></i>
-    <i class="fa fa-file-text" aria-hidden="true"></i>
-  </a>
+  <div class="flex gap-4">
+    <a
+      href="{% url 'create' %}"
+      class="flex gap-0.5 text-gray-700 transition-all hover:text-gray-800 focus-visible:text-gray-800 hover:scale-110"
+    >
+      <i class="fa fa-plus" aria-hidden="true"></i>
+      <i class="fa fa-file-text" aria-hidden="true"></i>
+    </a>
+    <i
+      class="fa fa-search cursor-pointer text-gray-700 transition-all hover:text-gray-800 focus-visible:text-gray-800 hover:scale-110"
+      aria-hidden="true"
+      id="filters-icon"
+    ></i>
+  </div>
+</header>
+<div
+  id="filters-container"
+  class="flex w-full border-b-2 border-b-gray-300 border-opacity-75 relative z-10 py-4 px-8 close"
+>
+  {% include 'notes/_filters.html' %}
 </div>
 
-<section class="pt-4 grid gap-2 xl:grid-cols-4 md:grid-cols-3 sm: grid-cols-2">
+<section
+  class="grid gap-2 xl:grid-cols-4 md:grid-cols-3 sm: grid-cols-2 p-8 pt-4"
+>
   {% for note in page_obj %}
   <div>{% include 'notes/_card.html' %}</div>
   {% endfor %}

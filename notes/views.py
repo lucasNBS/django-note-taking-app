@@ -2,6 +2,7 @@ from django.db.models.query import QuerySet
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DetailView, DeleteView, ListView
+from notes.filters import FilterBaseModel
 from notes.models import Note
 from notes.forms import NoteForm, FavoriteNoteForm
 
@@ -40,21 +41,20 @@ class DetailNoteView(DetailView):
   pk_url_kwarg = 'id'
   template_name = 'notes/note.html'
 
-class ListNoteView(ListView):
+class ListNoteView(FilterBaseModel):
   model = Note
   template_name = 'notes/notes.html'
   paginate_by = 20
   title = "All Notes"
 
-class ListDeletedNoteView(ListView):
+class ListDeletedNoteView(FilterBaseModel):
   model = Note
   template_name = 'notes/notes.html'
   paginate_by = 20
   title = "Trash"
 
   def get_queryset(self):
-    qs = self.model.all_objects.filter(is_deleted=True)
-    return qs
+    return super().get_queryset(base_qs=self.model.all_objects.filter(is_deleted=True))
   
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
@@ -73,12 +73,11 @@ class FavoriteNoteView(UpdateView):
   success_url = reverse_lazy('list')
   form_class = FavoriteNoteForm
 
-class ListFavoriteNote(ListView):
+class ListFavoriteNote(FilterBaseModel):
   model = Note
   template_name = 'notes/notes.html'
   paginate_by = 20
   title = "Starred"
 
   def get_queryset(self):
-    qs = self.model.objects.filter(is_liked=True)
-    return qs
+    return super().get_queryset(base_qs=self.model.objects.filter(is_liked=True))

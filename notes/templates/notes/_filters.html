@@ -1,0 +1,37 @@
+<form method="get" class="w-full flex justify-between">
+  <div class="flex justify-start gap-8">
+    <input
+      type="text"
+      placeholder="Search Note"
+      name="title"
+      value="{{ title }}"
+      class="bg-gray-100 rounded-md py-2 px-5 h-[38px]"
+    />
+    <div class="flex gap-3 items-center">
+      <div class="flex gap-1 items-center">
+        <span>From:</span>
+        <input
+          type="date"
+          name="start-date"
+          value="{{ start_date }}"
+          class="bg-gray-100 rounded-md py-2 px-3"
+        />
+      </div>
+      <div class="flex gap-1 items-center">
+        <span>To:</span>
+        <input
+          type="date"
+          name="end-date"
+          value="{{ end_date }}"
+          class="bg-gray-100 rounded-md py-2 px-3"
+        />
+      </div>
+    </div>
+  </div>
+  <button
+    type="submit"
+    class="bg-gray-700 py-2 px-4 text-white font-bold rounded-md self-end transition-colors hover:bg-gray-800 focus-visible:bg-gray-800"
+  >
+    Search
+  </button>
+</form>
