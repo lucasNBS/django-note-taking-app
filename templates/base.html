@@ -9,13 +9,14 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
     />
     <link rel="stylesheet" href="{% static 'css/output.css' %}" />
+    <script src="{% static 'js/form_modal.js' %}" defer></script>
     {% block head %} {% endblock %}
     <title>Notes</title>
   </head>
   <body class="font-sans">
     <div class="flex min-h-screen items-stretch">
       <aside
-        class="flex flex-col justify-start items-start gap-3 grow-0 bg-gray-300 min-w-max py-8 pl-4 pr-8"
+        class="flex flex-col justify-start items-start gap-3 grow-0 bg-gray-300 w-[352px] py-8 pl-4 pr-8"
       >
         <div class="flex gap-2 items-center ml-1">
           <img
@@ -75,19 +76,52 @@
         <div class="flex flex-col w-full">
           <div class="flex justify-between items-center w-full">
             <span class="text-sm text-gray-700 font-bold">Tags</span>
-            <i class="fa fa-plus" aria-hidden="true"></i>
+            <i
+              data-form-modal
+              data-url="{% url 'tags-create' %}"
+              data-modal-value=""
+              data-modal-title="Create Tag"
+              class="fa fa-plus cursor-pointer transition-transform hover:scale-110" aria-hidden="true"
+            ></i>
           </div>
           <ul class="mx-1">
-            <li>
-              <span class="text-sm text-gray-700">
-                <i class="fa fa-tag" aria-hidden="true"></i> Tag
-              </span>
-            </li>
+            {% for tag in tags %}
+              <li
+                class="relative flex justify-between py-2 px-3 rounded-md hover:bg-gray-400 cursor-pointer"
+              >
+                <span
+                  class="flex gap-2 items-center text-sm text-gray-700 overflow-hidden max-w-[calc(100%-53px)]"
+                >
+                  <i class="fa fa-tag" aria-hidden="true"></i> {{ tag.name }}
+                </span>
+                <div class="absolute inset-0 opacity-0 hover:opacity-100">
+                  <span class="flex h-full gap-2 justify-end mr-3 items-center text-sm text-gray-700">
+                    <i
+                      data-form-modal
+                      data-url="{% url 'tags-update' tag.id %}"
+                      data-modal-title="Update Tag"
+                      data-modal-value="{{ tag.name }}"
+                      class="fa fa-pencil-square-o text-gray-700 cursor-pointer transition-transform hover:scale-125"
+                      aria-hidden="true"
+                    ></i>
+                    <i
+                      data-confirm-modal
+                      data-url="{% url 'tags-delete' tag.id %}"
+                      data-modal-title="Confirm Delete"
+                      data-modal-text="Do you really want to delete this item?"
+                      class="fa fa-trash text-gray-700 cursor-pointer transition-transform hover:scale-125"
+                      aria-hidden="true"
+                    ></i>
+                  </span>
+                </div>
+              </li>
+            {% endfor %}
           </ul>
         </div>
       </aside>
       <main class="grow bg-gray-200">{% block content %}{% endblock %}</main>
     </div>
     {% block body %} {% endblock %}
+    {% include '_form_modal.html' with id='form' %}
   </body>
 </html>

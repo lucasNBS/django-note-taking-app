@@ -1,5 +1,6 @@
 from core.models import SoftDeleteModel
 from django.db import models
+from tags.models import Tag
 
 # Create your models here.
 class Note(SoftDeleteModel):
@@ -9,6 +10,7 @@ class Note(SoftDeleteModel):
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
   is_liked = models.BooleanField(default=False)
+  tags = models.ForeignKey(Tag, blank=True, null=True, on_delete=models.PROTECT)
 
   def __str__(self) -> str:
     return self.title

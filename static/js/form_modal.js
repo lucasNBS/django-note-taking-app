@@ -4,7 +4,6 @@
       this.element = modal;
       this.background = background;
       this.closeButton = modal.querySelector("[data-modal-close]");
-      this.cancelButton = modal.querySelector("[data-form-cancel]");
       this.init();
     }
 
@@ -14,9 +13,18 @@
       });
       this.background.addEventListener("click", () => this.close());
       this.closeButton.addEventListener("click", () => this.close());
-      this.cancelButton.addEventListener("click", (e) => {
+      this.element.querySelector("form").addEventListener("submit", (e) => {
         e.preventDefault();
-        this.close();
+
+        const input = modal.element.querySelector("input#id_name");
+
+        if (input.value.length > 50) {
+          const error = this.element.querySelector("[data-modal-error]");
+          error.classList.remove("h-0");
+          return;
+        }
+
+        e.target.submit();
       });
     }
 
@@ -31,9 +39,9 @@
     }
   }
 
-  const backgroundElement = document.querySelector("#modal-confirm-background");
-  const modalElement = document.querySelector("#modal-confirm");
-  const actionButtons = document.querySelectorAll("[data-confirm-modal]");
+  const backgroundElement = document.querySelector("#modal-form-background");
+  const modalElement = document.querySelector("#modal-form");
+  const actionButtons = document.querySelectorAll("[data-form-modal]");
 
   const modal = new Modal(modalElement, backgroundElement);
 
@@ -41,11 +49,11 @@
     button.addEventListener("click", () => {
       modal.element.querySelector("[data-modal-title]").innerText =
         button.dataset.modalTitle;
-      modal.element.querySelector("[data-modal-text]").innerText =
-        button.dataset.modalText;
+      modal.element
+        .querySelector("input#id_name")
+        .setAttribute("value", button.dataset.modalValue);
       modal.element.querySelector("[data-modal-form]").action =
         button.dataset.url;
-
       modal.open();
     });
   });

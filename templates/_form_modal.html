@@ -1,0 +1,20 @@
+{% extends 'modal.html' %}
+
+{% block content %}
+<div class="flex gap-4 mt-4">
+  <input
+    class="py-2 px-4 rounded"
+    id="id_name"
+    name="name"
+    type="text"
+    required="true"
+  />
+  <button
+    class="text-lg w-28 py-1 px-3 transition-colors bg-gray-200 hover:bg-slate-100 focus-visible:bg-slate-100"
+    type="submit"
+  >
+    Save
+  </button>
+</div>
+<span data-modal-error class="text-sm text-red-600 mt-0.5 self-start overflow-hidden h-0">Max lenght is 50</span>
+{% endblock %}

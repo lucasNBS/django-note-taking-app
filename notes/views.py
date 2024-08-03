@@ -4,6 +4,7 @@ from django.views.generic import CreateView, UpdateView, DetailView, DeleteView
 from notes.filters import FilterBaseModel
 from notes.models import Note
 from notes.forms import NoteForm, FavoriteNoteForm
+from tags.models import Tag
 
 class CreateNoteView(CreateView):
   model = Note
@@ -45,6 +46,11 @@ class ListNoteView(FilterBaseModel):
   paginate_by = 20
   title = "All Notes"
 
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context["tags"] = Tag.objects.all()
+    return context
+
 class ListDeletedNoteView(FilterBaseModel):
   model = Note
   template_name = 'notes/notes.html'
@@ -57,6 +63,7 @@ class ListDeletedNoteView(FilterBaseModel):
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context["deleted"] = True
+    context["tags"] = Tag.objects.all()
     return context
 
 def restore_note_view(request, id):
@@ -79,3 +86,8 @@ class ListFavoriteNote(FilterBaseModel):
 
   def get_queryset(self):
     return super().get_queryset(base_qs=self.model.objects.filter(is_liked=True))
+  
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context["tags"] = Tag.objects.all()
+    return context

@@ -10,8 +10,8 @@
     <div class="flex gap-2 py-2 px-3 absolute right-0 top-0">
       {% if deleted %}
         <span
-          data-note-id="{% url 'notes-restore' note.id %}"
-          data-button-modal
+          data-url="{% url 'notes-restore' note.id %}"
+          data-confirm-modal
           data-modal-title="Confirm Restore"
           data-modal-text="Do you really want to restore this item?"
           class="cursor-pointer transition-transform hover:scale-110"
@@ -62,8 +62,8 @@
           <i class="fa fa-pencil-square-o text-gray-700" aria-hidden="true"></i>
         </a>
         <span
-          data-note-id="{% url 'notes-delete' note.id %}"
-          data-button-modal
+          data-url="{% url 'notes-delete' note.id %}"
+          data-confirm-modal
           data-modal-title="Confirm Delete"
           data-modal-text="Do you really want to delete this item?"
           class="cursor-pointer transition-transform hover:scale-110"
