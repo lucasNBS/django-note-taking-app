@@ -2,13 +2,13 @@ from django.urls import path
 from .views import CreateNoteView, UpdateNoteView, DeleteNoteView, ListNoteView, DetailNoteView, ListDeletedNoteView, restore_note_view, FavoriteNoteView, ListFavoriteNote
 
 urlpatterns = [
-  path("create", CreateNoteView.as_view(), name='create'),
-  path("update/<int:id>", UpdateNoteView.as_view(), name='update'),
-  path("delete/<int:id>", DeleteNoteView.as_view(), name='delete'),
-  path("<int:id>", DetailNoteView.as_view(), name='detail'),
-  path("", ListNoteView.as_view(), name='list'),
-  path("restore/<int:id>", restore_note_view, name='restore'),
-  path("starred/<int:id>", FavoriteNoteView.as_view(), name='starred'),
-  path("starred", ListFavoriteNote.as_view(), name='starreds'),
-  path("trash", ListDeletedNoteView.as_view(), name='list-deleted'),
+  path("create", CreateNoteView.as_view(), name='notes-create'),
+  path("update/<int:id>", UpdateNoteView.as_view(), name='notes-update'),
+  path("delete/<int:id>", DeleteNoteView.as_view(), name='notes-delete'),
+  path("<int:id>", DetailNoteView.as_view(), name='notes-detail'),
+  path("", ListNoteView.as_view(), name='notes-list'),
+  path("restore/<int:id>", restore_note_view, name='notes-restore'),
+  path("starred/<int:id>", FavoriteNoteView.as_view(), name='notes-starred'),
+  path("starred", ListFavoriteNote.as_view(), name='notes-starreds'),
+  path("trash", ListDeletedNoteView.as_view(), name='notes-list-deleted'),
 ]

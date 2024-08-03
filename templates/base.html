@@ -26,34 +26,36 @@
           <div class="flex flex-col">
             <span
               class="text-sm font-bold text-gray-700 text-ellipsis overflow-hidden whitespace-nowrap max-w-60"
-              >Lucas Nunes B. S.</span
             >
+              Lucas Nunes B. S.
+            </span>
             <span
               class="text-xs text-gray-500 text-ellipsis overflow-hidden whitespace-nowrap max-w-64"
-              >lucasnunesbarretosampaio@gmail.com</span
             >
+              lucasnunesbarretosampaio@gmail.com
+            </span>
           </div>
         </div>
         <div class="w-full h-0.5 bg-gray-400 opacity-25"></div>
         <nav class="ml-1">
           <ul class="flex flex-col gap-2 text-sm text-gray-700">
             <li>
-              <a href="{% url 'list' %}"
-                ><i class="fa fa-file-text" aria-hidden="true"></i> All Notes</a
-              >
+              <a href="{% url 'notes-list' %}">
+                <i class="fa fa-file-text" aria-hidden="true"></i> All Notes
+              </a>
             </li>
             <li>
               <span><i class="fa fa-users" aria-hidden="true"></i> Shared</span>
             </li>
             <li>
-              <a href="{% url 'starreds' %}"
-                ><i class="fa fa-star" aria-hidden="true"></i> Starred</a
-              >
+              <a href="{% url 'notes-starreds' %}">
+                <i class="fa fa-star" aria-hidden="true"></i> Starred
+              </a>
             </li>
             <li>
-              <a href="{% url 'list-deleted' %}"
-                ><i class="fa fa-trash" aria-hidden="true"></i> Trash</a
-              >
+              <a href="{% url 'notes-list-deleted' %}">
+                <i class="fa fa-trash" aria-hidden="true"></i> Trash
+              </a>
             </li>
           </ul>
         </nav>
@@ -64,9 +66,22 @@
           </div>
           <ul class="mx-1">
             <li>
-              <span class="text-sm text-gray-700"
-                ><i class="fa fa-folder" aria-hidden="true"></i> General</span
-              >
+              <span class="text-sm text-gray-700">
+                <i class="fa fa-folder" aria-hidden="true"></i> General
+              </span>
+            </li>
+          </ul>
+        </div>
+        <div class="flex flex-col w-full">
+          <div class="flex justify-between items-center w-full">
+            <span class="text-sm text-gray-700 font-bold">Tags</span>
+            <i class="fa fa-plus" aria-hidden="true"></i>
+          </div>
+          <ul class="mx-1">
+            <li>
+              <span class="text-sm text-gray-700">
+                <i class="fa fa-tag" aria-hidden="true"></i> Tag
+              </span>
             </li>
           </ul>
         </div>

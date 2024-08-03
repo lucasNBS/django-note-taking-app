@@ -22,3 +22,7 @@ a.w-fit.z-10:hover ~ div.opacity-0 {
   padding-bottom: 0px;
   transform: translateY(-2px);
 }
+
+.z-50 {
+  z-index: 50;
+}

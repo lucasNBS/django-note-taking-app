@@ -1,5 +1,5 @@
 {% extends 'base.html' %} {% load static %} {% block head %}
-<script src="{% static 'js/modal.js' %}" defer></script>
+<script src="{% static 'js/confirm_modal.js' %}" defer></script>
 <script src="{% static 'js/favorite_note.js' %}" defer></script>
 <script src="{% static 'js/filters.js' %}" defer></script>
 {% endblock %} {% block content %}
@@ -11,7 +11,7 @@
 
   <div class="flex gap-4">
     <a
-      href="{% url 'create' %}"
+      href="{% url 'notes-create' %}"
       class="flex gap-0.5 text-gray-700 transition-all hover:text-gray-800 focus-visible:text-gray-800 hover:scale-110"
     >
       <i class="fa fa-plus" aria-hidden="true"></i>
@@ -38,5 +38,8 @@
   <div>{% include 'notes/_card.html' %}</div>
   {% endfor %}
 </section>
+{% endblock %}
 
-{% endblock %} {% block body %} {% include '_modal.html' %} {% endblock %}
+{% block body %}
+  {% include '_confirm_modal.html' with id='confirm' %}
+{% endblock %}

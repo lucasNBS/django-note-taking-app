@@ -1,15 +1,18 @@
 {% extends 'base.html' %} {% block content %}
 <div class="p-8">
-  <a href="/notes"
-    ><i class="fa fa-chevron-left" aria-hidden="true"></i> Voltar</a
-  >
+  <a href="{% url 'notes-list' %}">
+    <i class="fa fa-chevron-left" aria-hidden="true"></i> Voltar
+  </a>
   <h1 class="text-3xl capitalize font-bold mt-4">{{ type }} Note</h1>
   <form method="post" class="flex flex-col gap-4 mt-4">
     {% csrf_token %} {% for field in form %}
     <div class="flex flex-col">
-      {{ field }} {% if form.errors %} {% for error in field.errors %}
-      <span class="text-sm text-red-600 mt-0.5">{{ error|escape }}</span>
-      {% endfor %} {% endif %}
+      {{ field }}
+      {% if form.errors %}
+        {% for error in field.errors %}
+          <span class="text-sm text-red-600 mt-0.5">{{ error|escape }}</span>
+        {% endfor %}
+      {% endif %}
     </div>
     {% endfor %}
 

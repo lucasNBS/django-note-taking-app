@@ -1,12 +1,14 @@
 {% extends 'base.html' %} {% block content %}
-<a href="/notes"
-  ><i class="fa fa-chevron-left" aria-hidden="true"></i> Voltar</a
->
-<article
-  class="flex flex-col gap-4 max-h-[calc(100vh-4rem)] overflow-auto mt-4"
->
-  <h1 class="text-3xl capitalize font-bold">{{ note.title }}</h1>
-  <p>{{ note.description }}</p>
-  <div data-content>{{ note.content | markdown | safe }}</div>
-</article>
+<div class="p-8">
+  <a href="{% url 'notes-list' %}"
+    ><i class="fa fa-chevron-left" aria-hidden="true"></i> Voltar</a
+  >
+  <article
+    class="flex flex-col gap-4 max-h-[calc(100vh-4rem)] overflow-auto mt-4"
+  >
+    <h1 class="text-3xl capitalize font-bold">{{ note.title }}</h1>
+    <p>{{ note.description }}</p>
+    <div data-content>{{ note.content | markdown | safe }}</div>
+  </article>
+</div>
 {% endblock %}

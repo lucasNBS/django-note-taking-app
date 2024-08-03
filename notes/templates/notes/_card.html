@@ -1,5 +1,5 @@
 <article class="flex flex-col bg-gray-100 p-4 rounded-lg gap-2 relative">
-  <a class="w-fit z-10" href="{% url 'detail' note.id %}">
+  <a class="w-fit z-10" href="{% url 'notes-detail' note.id %}">
     <h2
       class="font-bold text-xl max-h-20 capitalize overflow-hidden w-fit transition-transform hover:scale-110"
     >
@@ -9,62 +9,67 @@
   <div class="opacity-0 hover:opacity-100 absolute w-full h-full left-0 top-0">
     <div class="flex gap-2 py-2 px-3 absolute right-0 top-0">
       {% if deleted %}
-      <span
-        data-note-id="{% url 'restore' note.id %}"
-        data-button-modal
-        data-modal-title="Confirm Restore"
-        data-modal-text="Do you really want to restore this item?"
-        class="cursor-pointer transition-transform hover:scale-110"
-        ><i class="fa fa-undo text-gray-700" aria-hidden="true"></i
-      ></span>
+        <span
+          data-note-id="{% url 'notes-restore' note.id %}"
+          data-button-modal
+          data-modal-title="Confirm Restore"
+          data-modal-text="Do you really want to restore this item?"
+          class="cursor-pointer transition-transform hover:scale-110"
+        >
+          <i class="fa fa-undo text-gray-700" aria-hidden="true"></i>
+        </span>
       {% else %}
-      <form
-        data-favorite-note
-        action="{% url 'starred' note.id %}"
-        method="post"
-      >
-        {% csrf_token %} {% if note.is_liked %}
-        <input
-          class="invisible"
-          type="checkbox"
-          name="is_liked"
-          id="id_is_liked"
-          checked
-        />
-        {% else %}
-        <input
-          class="invisible"
-          type="checkbox"
-          name="is_liked"
-          id="id_is_liked"
-        />
-        {% endif %} {% if note.is_liked %}
-        <i
-          data-star
-          class="fa fa-star text-yellow-600 cursor-pointer"
-          aria-hidden="true"
-        ></i>
-        {% else %}
-        <i
-          data-star
-          class="fa fa-star-o text-gray-700 cursor-pointer"
-          aria-hidden="true"
-        ></i>
-        {% endif %}
-      </form>
-      <a
-        class="transition-transform hover:scale-110"
-        href="{% url 'update' note.id %}"
-        ><i class="fa fa-pencil-square-o text-gray-700" aria-hidden="true"></i
-      ></a>
-      <span
-        data-note-id="{% url 'delete' note.id %}"
-        data-button-modal
-        data-modal-title="Confirm Delete"
-        data-modal-text="Do you really want to delete this item?"
-        class="cursor-pointer transition-transform hover:scale-110"
-        ><i class="fa fa-trash text-gray-700" aria-hidden="true"></i
-      ></span>
+        <form
+          data-favorite-note
+          action="{% url 'notes-starred' note.id %}"
+          method="post"
+        >
+          {% csrf_token %}
+          {% if note.is_liked %}
+            <input
+              class="invisible"
+              type="checkbox"
+              name="is_liked"
+              id="id_is_liked"
+              checked
+            />
+          {% else %}
+            <input
+              class="invisible"
+              type="checkbox"
+              name="is_liked"
+              id="id_is_liked"
+            />
+          {% endif %}
+          {% if note.is_liked %}
+            <i
+              data-star
+              class="fa fa-star text-yellow-600 cursor-pointer"
+              aria-hidden="true"
+            ></i>
+          {% else %}
+            <i
+              data-star
+              class="fa fa-star-o text-gray-700 cursor-pointer"
+              aria-hidden="true"
+            ></i>
+          {% endif %}
+        </form>
+        <a
+          class="transition-transform hover:scale-110"
+          href="{% url 'notes-update' note.id %}"
+        >
+          <i class="fa fa-pencil-square-o text-gray-700" aria-hidden="true"></i>
+        </a>
+        <span
+          data-note-id="{% url 'notes-delete' note.id %}"
+          data-button-modal
+          data-modal-title="Confirm Delete"
+          data-modal-text="Do you really want to delete this item?"
+          class="cursor-pointer transition-transform hover:scale-110"
+        >
+          <i class="fa fa-trash text-gray-700" aria-hidden="true"></i>
+        </span>
       {% endif %}
     </div>
   </div>
