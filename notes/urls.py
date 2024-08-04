@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CreateNoteView, UpdateNoteView, DeleteNoteView, ListNoteView, DetailNoteView, ListDeletedNoteView, restore_note_view, FavoriteNoteView, ListFavoriteNote
+from .views import CreateNoteView, UpdateNoteView, DeleteNoteView, ListNoteView, DetailNoteView, ListDeletedNoteView, restore_note_view, FavoriteNoteView, ListFavoriteNoteView, ListTagNotesView
 
 urlpatterns = [
   path("create", CreateNoteView.as_view(), name='notes-create'),
@@ -9,6 +9,7 @@ urlpatterns = [
   path("", ListNoteView.as_view(), name='notes-list'),
   path("restore/<int:id>", restore_note_view, name='notes-restore'),
   path("starred/<int:id>", FavoriteNoteView.as_view(), name='notes-starred'),
-  path("starred", ListFavoriteNote.as_view(), name='notes-starreds'),
+  path("starred", ListFavoriteNoteView.as_view(), name='notes-starreds'),
   path("trash", ListDeletedNoteView.as_view(), name='notes-list-deleted'),
+  path("tag/<int:id>", ListTagNotesView.as_view(), name='notes-list-tag'),
 ]

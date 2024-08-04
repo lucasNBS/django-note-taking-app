@@ -88,15 +88,18 @@
           </div>
           <ul class="mx-1">
             {% for tag in tags %}
-              <li
-                class="relative flex justify-between py-2 px-3 rounded-md hover:bg-gray-400 cursor-pointer"
-              >
-                <span
-                  class="flex gap-2 items-center text-sm text-gray-700 overflow-hidden max-w-[calc(100%-53px)]"
+              <li class="tag-item relative rounded-md hover:bg-gray-400 cursor-pointer">
+                <a
+                  class="flex justify-between py-2 px-3"
+                  href="{% url 'notes-list-tag' tag.id %}"
                 >
-                  <i class="fa fa-tag" aria-hidden="true"></i> {{ tag.name }}
-                </span>
-                <div class="absolute inset-0 opacity-0 hover:opacity-100">
+                  <span
+                    class="flex gap-2 items-center text-sm text-gray-700 overflow-hidden max-w-[calc(100%-53px)]"
+                  >
+                    <i class="fa fa-tag" aria-hidden="true"></i> {{ tag.name }}
+                  </span>
+                </a>
+                <div class="tag-item-hover absolute top-0 right-0 w-max h-full opacity-0">
                   <span class="flex h-full gap-2 justify-end mr-3 items-center text-sm text-gray-700">
                     <i
                       data-form-modal

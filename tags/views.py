@@ -1,5 +1,3 @@
-from django.forms import BaseModelForm
-from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView
 from .models import Tag

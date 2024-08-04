@@ -1,4 +1,4 @@
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DetailView, DeleteView
 from notes.filters import FilterBaseModel
@@ -46,11 +46,6 @@ class ListNoteView(FilterBaseModel):
   paginate_by = 20
   title = "All Notes"
 
-  def get_context_data(self, **kwargs):
-    context = super().get_context_data(**kwargs)
-    context["tags"] = Tag.objects.all()
-    return context
-
 class ListDeletedNoteView(FilterBaseModel):
   model = Note
   template_name = 'notes/notes.html'
@@ -63,7 +58,6 @@ class ListDeletedNoteView(FilterBaseModel):
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context["deleted"] = True
-    context["tags"] = Tag.objects.all()
     return context
 
 def restore_note_view(request, id):
@@ -78,7 +72,7 @@ class FavoriteNoteView(UpdateView):
   success_url = reverse_lazy('notes-list')
   form_class = FavoriteNoteForm
 
-class ListFavoriteNote(FilterBaseModel):
+class ListFavoriteNoteView(FilterBaseModel):
   model = Note
   template_name = 'notes/notes.html'
   paginate_by = 20
@@ -86,8 +80,13 @@ class ListFavoriteNote(FilterBaseModel):
 
   def get_queryset(self):
     return super().get_queryset(base_qs=self.model.objects.filter(is_liked=True))
-  
-  def get_context_data(self, **kwargs):
-    context = super().get_context_data(**kwargs)
-    context["tags"] = Tag.objects.all()
-    return context
+
+class ListTagNotesView(FilterBaseModel):
+  model = Note
+  template_name = 'notes/notes.html'
+  paginate_by = 20
+
+  def get_queryset(self):
+    tag = get_object_or_404(Tag, id=self.kwargs.get('id'))
+    self.title = tag.name
+    return super().get_queryset(base_qs=self.model.objects.filter(tags__id=tag.id))

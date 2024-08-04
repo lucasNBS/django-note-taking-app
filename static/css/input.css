@@ -2,7 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-a.w-fit.z-10:hover ~ div.opacity-0 {
+a.note-card-title:hover ~ div.note-card-hover {
+  opacity: 1;
+}
+
+li.tag-item:hover div.tag-item-hover {
   opacity: 1;
 }
 
