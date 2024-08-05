@@ -1,12 +1,15 @@
+from django.db.models.base import Model as Model
+from django.db.models.query import QuerySet
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DetailView, DeleteView
+from core.views import BaseContext
 from notes.filters import FilterBaseModel
 from notes.models import Note
 from notes.forms import NoteForm, FavoriteNoteForm
 from tags.models import Tag
 
-class CreateNoteView(CreateView):
+class CreateNoteView(BaseContext, CreateView):
   model = Note
   template_name = 'notes/form.html'
   success_url = reverse_lazy('notes-list')
@@ -17,7 +20,7 @@ class CreateNoteView(CreateView):
     context["type"] = "Create"
     return context
 
-class UpdateNoteView(UpdateView):
+class UpdateNoteView(BaseContext, UpdateView):
   model = Note
   pk_url_kwarg = 'id'
   template_name = 'notes/form.html'
@@ -35,7 +38,7 @@ class DeleteNoteView(DeleteView):
   template_name = 'notes/confirm_delete.html'
   success_url = reverse_lazy('notes-list')
 
-class DetailNoteView(DetailView):
+class DetailNoteView(BaseContext, DetailView):
   model = Note
   pk_url_kwarg = 'id'
   template_name = 'notes/note.html'
@@ -65,7 +68,7 @@ def restore_note_view(request, id):
   note.restore()
   return redirect('notes-list')
 
-class FavoriteNoteView(UpdateView):
+class FavoriteNoteView(BaseContext, UpdateView):
   model = Note
   pk_url_kwarg = 'id'
   template_name = 'notes/form.html'

@@ -30,3 +30,11 @@ li.tag-item:hover div.tag-item-hover {
 .z-50 {
   z-index: 50;
 }
+
+.p-2 {
+  padding: 0.5rem;
+}
+
+.border-b-2 {
+  border-bottom-width: 2px;
+}

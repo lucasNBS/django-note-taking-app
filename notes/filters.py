@@ -1,8 +1,8 @@
-from .models import Note
 from django.views.generic import ListView
-from tags.models import Tag
+from .models import Note
+from core.views import BaseContext
 
-class FilterBaseModel(ListView):
+class FilterBaseModel(BaseContext, ListView):
   def get_queryset(self, base_qs=Note.objects.all()):
     title = self.request.GET.get('title', '')
     start_date = self.request.GET.get('start-date', '')
@@ -24,6 +24,5 @@ class FilterBaseModel(ListView):
     context["title"] = self.request.GET.get('title', '')
     context["start_date"] = self.request.GET.get('start-date', '')
     context["end_date"] = self.request.GET.get('end-date', '')
-    context["tags"] = Tag.objects.all()
 
     return context

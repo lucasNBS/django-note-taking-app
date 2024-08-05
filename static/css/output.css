@@ -648,6 +648,10 @@ video {
   top: 0px;
 }
 
+.top-\[calc\(100\%\+2px\)\] {
+  top: calc(100% + 2px);
+}
+
 .-z-10 {
   z-index: -10;
 }
@@ -687,6 +691,10 @@ video {
 
 .mt-8 {
   margin-top: 2rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
 }
 
 .block {
@@ -739,6 +747,10 @@ video {
 
 .max-h-48 {
   max-height: 12rem;
+}
+
+.max-h-\[200px\] {
+  max-height: 200px;
 }
 
 .max-h-\[calc\(100vh-4rem\)\] {
@@ -923,12 +935,21 @@ video {
   border-radius: 0.375rem;
 }
 
+.rounded-xl {
+  border-radius: 0.75rem;
+}
+
 .border {
   border-width: 1px;
 }
 
 .border-b-2 {
   border-bottom-width: 2px;
+}
+
+.border-gray-300 {
+  --tw-border-opacity: 1;
+  border-color: rgb(209 213 219 / var(--tw-border-opacity));
 }
 
 .border-b-gray-300 {
@@ -968,6 +989,16 @@ video {
 .bg-gray-700 {
   --tw-bg-opacity: 1;
   background-color: rgb(55 65 81 / var(--tw-bg-opacity));
+}
+
+.bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.bg-gray-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(107 114 128 / var(--tw-bg-opacity));
 }
 
 .bg-opacity-50 {
@@ -1202,6 +1233,14 @@ li.tag-item:hover div.tag-item-hover {
 
 .z-50 {
   z-index: 50;
+}
+
+.p-2 {
+  padding: 0.5rem;
+}
+
+.border-b-2 {
+  border-bottom-width: 2px;
 }
 
 .hover\:scale-110:hover {

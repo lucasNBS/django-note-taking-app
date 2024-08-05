@@ -10,7 +10,10 @@ class NoteForm(forms.ModelForm):
 
   class Meta:
     model = Note
-    fields = ['title', 'description', 'content']
+    fields = ['title', 'description', 'tags', 'content']
+    widgets = {
+      'tags': widgets.SelectMultiple(label="Tags")
+    }
 
   def clean_title(self):
     title = self.cleaned_data["title"]

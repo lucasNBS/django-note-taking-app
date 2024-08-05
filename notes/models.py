@@ -10,7 +10,7 @@ class Note(SoftDeleteModel):
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
   is_liked = models.BooleanField(default=False)
-  tags = models.ForeignKey(Tag, blank=True, null=True, on_delete=models.PROTECT)
+  tags = models.ManyToManyField(Tag, blank=True, null=True)
 
   def __str__(self) -> str:
     return self.title
