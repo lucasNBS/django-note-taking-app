@@ -44,13 +44,13 @@
           {% if note.is_liked %}
             <i
               data-star
-              class="fa fa-star text-yellow-600 cursor-pointer"
+              class="fa fa-star text-yellow-600 cursor-pointer transition-transform hover:scale-110"
               aria-hidden="true"
             ></i>
           {% else %}
             <i
               data-star
-              class="fa fa-star-o text-gray-700 cursor-pointer"
+              class="fa fa-star-o text-gray-700 cursor-pointer transition-transform hover:scale-110"
               aria-hidden="true"
             ></i>
           {% endif %}
@@ -74,4 +74,9 @@
     </div>
   </div>
   <p class="text-xs max-h-48 overflow-hidden">{{ note.description }}</p>
+  <div class="flex gap-2 overflow-hidden">
+    {% for tag in note.tags.all %}
+      {% include 'tags/_tag.html' %}
+    {% endfor %}
+  </div>
 </article>
