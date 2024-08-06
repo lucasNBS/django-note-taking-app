@@ -1,11 +1,11 @@
-<form method="get" class="w-full flex justify-between">
+<form method="get" class="w-full flex flex-col justify-between gap-2">
   <div class="flex justify-start gap-8">
     <input
       type="text"
       placeholder="Search Note"
       name="title"
       value="{{ title }}"
-      class="bg-gray-100 rounded-md py-2 px-5 h-[38px]"
+      class="bg-gray-100 rounded-md py-2 px-5 h-[38px] w-full"
     />
     <div class="flex gap-3 items-center">
       <div class="flex gap-1 items-center">
@@ -28,6 +28,7 @@
       </div>
     </div>
   </div>
+  {% include 'widgets/select_multiple.html' with class='bg-gray-100' placeholder='Search Tags' %}
   <button
     type="submit"
     class="bg-gray-700 py-2 px-4 text-white font-bold rounded-md self-end transition-colors hover:bg-gray-800 focus-visible:bg-gray-800"

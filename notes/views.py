@@ -1,10 +1,9 @@
 from django.db.models.base import Model as Model
-from django.db.models.query import QuerySet
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DetailView, DeleteView
 from core.views import BaseContext
-from notes.filters import FilterBaseModel
+from notes.filters import FilterBaseView
 from notes.models import Note
 from notes.forms import NoteForm, FavoriteNoteForm
 from tags.models import Tag
@@ -43,13 +42,13 @@ class DetailNoteView(BaseContext, DetailView):
   pk_url_kwarg = 'id'
   template_name = 'notes/note.html'
 
-class ListNoteView(FilterBaseModel):
+class ListNoteView(FilterBaseView):
   model = Note
   template_name = 'notes/notes.html'
   paginate_by = 20
   title = "All Notes"
 
-class ListDeletedNoteView(FilterBaseModel):
+class ListDeletedNoteView(FilterBaseView):
   model = Note
   template_name = 'notes/notes.html'
   paginate_by = 20
@@ -75,7 +74,7 @@ class FavoriteNoteView(BaseContext, UpdateView):
   success_url = reverse_lazy('notes-list')
   form_class = FavoriteNoteForm
 
-class ListFavoriteNoteView(FilterBaseModel):
+class ListFavoriteNoteView(FilterBaseView):
   model = Note
   template_name = 'notes/notes.html'
   paginate_by = 20
@@ -84,7 +83,7 @@ class ListFavoriteNoteView(FilterBaseModel):
   def get_queryset(self):
     return super().get_queryset(base_qs=self.model.objects.filter(is_liked=True))
 
-class ListTagNotesView(FilterBaseModel):
+class ListTagNotesView(FilterBaseView):
   model = Note
   template_name = 'notes/notes.html'
   paginate_by = 20

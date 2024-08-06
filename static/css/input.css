@@ -14,17 +14,21 @@ li.tag-item:hover div.tag-item-hover {
   white-space: pre-wrap;
 }
 
-#filters-container {
-  height: 72px;
-  overflow: hidden;
-  transition: all 200ms linear;
+#content-container {
+  transform: translateY(0);
 }
 
-#filters-container.close {
-  height: 0px;
-  padding-top: 0px;
-  padding-bottom: 0px;
-  transform: translateY(-2px);
+#content-container.close-filters {
+  --filters-height: 0;
+  transform: translateY(calc(var(--filters-height) * -1px));
+}
+
+#filters-container {
+  overflow: visible;
+}
+
+#content-container.close-filters #filters-container {
+  overflow: hidden;
 }
 
 .z-50 {

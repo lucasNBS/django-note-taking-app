@@ -23,19 +23,21 @@
     ></i>
   </div>
 </header>
-<div
-  id="filters-container"
-  class="flex w-full border-b-2 border-b-gray-300 border-opacity-75 relative z-10 py-4 px-8 close"
->
-  {% include 'notes/_filters.html' %}
-</div>
-
-<section
-  class="grid gap-2 xl:grid-cols-4 md:grid-cols-3 sm: grid-cols-2 p-8 pt-4"
->
-  {% for note in page_obj %}
-  <div>{% include 'notes/_card.html' %}</div>
-  {% endfor %}
+<section id="content-container" class="flex flex-col close-filters">
+  <div
+    id="filters-container"
+    class="flex w-full border-b-2 border-b-gray-300 border-opacity-75 relative z-10 py-4 px-8"
+  >
+    {% include 'notes/_filters.html' %}
+  </div>
+  
+  <section
+    class="grid gap-2 xl:grid-cols-4 md:grid-cols-3 sm: grid-cols-2 p-8 pt-4"
+  >
+    {% for note in page_obj %}
+    <div>{% include 'notes/_card.html' %}</div>
+    {% endfor %}
+  </section>
 </section>
 {% endblock %}
 
