@@ -25,4 +25,5 @@ urlpatterns = [
     path("", redirect_home),
     path('notes/', include('notes.urls')),
     path('tags/', include('tags.urls')),
+    path('accounts/', include('accounts.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

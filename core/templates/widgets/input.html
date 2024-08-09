@@ -1,7 +1,19 @@
-<label class="text-lg capitalize font-bold">{{ widget.label }}</label>
+<label
+  {% if widget.small %}
+    class="capitalize"
+  {% else %}
+    class="text-lg capitalize font-bold"
+  {% endif %}
+>
+  {{ widget.label }}
+</label>
 {% if widget.value is not None %}
 <input
-  class="py-2 px-4 rounded"
+  {% if widget.small %}
+    class="py-1 px-2 rounded"
+  {% else %}
+    class="py-2 px-4 rounded"
+  {% endif %}
   id="{{ widget.attrs.id }}"
   name="{{ widget.name }}"
   type="{{ widget.type }}"
@@ -10,7 +22,11 @@
 />
 {% else %}
 <input
-  class="py-2 px-4 rounded"
+  {% if widget.small %}
+    class="py-1 px-2 rounded"
+  {% else %}
+    class="py-2 px-4 rounded"
+  {% endif %}
   id="{{ widget.attrs.id }}"
   name="{{ widget.name }}"
   type="{{ widget.type }}"

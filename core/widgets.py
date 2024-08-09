@@ -3,13 +3,17 @@ from django import forms
 class InputField(forms.TextInput):
   template_name = 'widgets/input.html'
 
-  def __init__(self, label=None, **kwargs):
+  def __init__(self, label=None, small=None, type="text", **kwargs):
     super().__init__(**kwargs)
     self.label = label
+    self.small = small
+    self.type = type
 
   def get_context(self, name, value, attrs):
     context = super().get_context(name, value, attrs)
     context["widget"]["label"] = self.label
+    context["widget"]["small"] = self.small
+    context["widget"]["type"] = self.type
     return context
 
 class Textarea(forms.Textarea):

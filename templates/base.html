@@ -31,15 +31,23 @@
             <span
               class="text-sm font-bold text-gray-700 text-ellipsis overflow-hidden whitespace-nowrap max-w-60"
             >
-              Lucas Nunes B. S.
+              {{ user.username }}
             </span>
             <span
               class="text-xs text-gray-500 text-ellipsis overflow-hidden whitespace-nowrap max-w-64"
             >
-              lucasnunesbarretosampaio@gmail.com
+              {{ user.email }}
             </span>
           </div>
         </div>
+        {% if user.is_authenticated %}
+          <form class="ml-1" method="post" action="/accounts/logout/">
+            {% csrf_token %}
+            <button class="text-sm text-red-800">
+              <i class="fa fa-sign-out" aria-hidden="true"></i> Log Out
+            </button>
+          </form>
+        {% endif %}
         <div class="w-full h-0.5 bg-gray-400 opacity-25"></div>
         <nav class="ml-1">
           <ul class="flex flex-col gap-2 text-sm text-gray-700">

@@ -2,7 +2,7 @@ from django.shortcuts import redirect
 from django.views.generic import View
 from tags.models import Tag
 
-def redirect_home():
+def redirect_home(request):
   return redirect('notes-list')
 
 class BaseContext(View):
