@@ -1,11 +1,11 @@
 from django.shortcuts import redirect
-from django.views.generic import View
 from tags.models import Tag
+from accounts.filters import CreatedByUserFilter
 
 def redirect_home(request):
   return redirect('notes-list')
 
-class BaseContext(View):
+class BaseContext(CreatedByUserFilter):
 
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)

@@ -5,14 +5,14 @@ from core.views import BaseContext
 
 class FilterBaseView(BaseContext, ListView):
   def get_queryset(self, base_qs=Note.objects.all()):
+    qs = super().get_queryset(base_qs)
+
     request = self.request.GET.copy()
 
     title = request.get('title', '')
     start_date = request.get('start-date', '')
     end_date = request.get('end-date', '')
     tags = request.pop('tags', '')
-
-    qs = base_qs.filter(created_by=self.request.user)
 
     qs = qs.filter(title__icontains=title)
 
