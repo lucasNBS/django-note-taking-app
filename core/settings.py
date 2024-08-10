@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'core',
     'notes',
     'tags',
+    'folders',
     'accounts',
 ]
 

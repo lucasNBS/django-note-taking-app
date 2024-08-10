@@ -74,14 +74,49 @@
         <div class="flex flex-col w-full">
           <div class="flex justify-between items-center w-full">
             <span class="text-sm text-gray-700 font-bold">Folders</span>
-            <i class="fa fa-plus" aria-hidden="true"></i>
+            <i
+              data-form-modal
+              data-url="{% url 'folders-create' %}"
+              data-modal-value=""
+              data-modal-title="Create Folder"
+              class="fa fa-plus cursor-pointer transition-transform hover:scale-110" aria-hidden="true"
+            ></i>
           </div>
           <ul class="mx-1">
-            <li>
-              <span class="text-sm text-gray-700">
-                <i class="fa fa-folder" aria-hidden="true"></i> General
-              </span>
-            </li>
+            {% for folder in folders %}
+              <li class="tag-item relative rounded-md hover:bg-gray-400 cursor-pointer">
+                <a
+                  class="flex justify-between py-2 px-3"
+                  href="{% url 'notes-list-folder' folder.id %}"
+                >
+                  <span
+                    class="flex gap-2 items-center text-sm text-gray-700 overflow-hidden max-w-[calc(100%-53px)]"
+                  >
+                    <i class="fa fa-folder" aria-hidden="true"></i> {{ folder.name }}
+                  </span>
+                </a>
+                <div class="tag-item-hover absolute top-0 right-0 w-max h-full opacity-0">
+                  <span class="flex h-full gap-2 justify-end mr-3 items-center text-sm text-gray-700">
+                    <i
+                      data-form-modal
+                      data-url="{% url 'folders-update' folder.id %}"
+                      data-modal-title="Update Folder"
+                      data-modal-value="{{ folder.name }}"
+                      class="fa fa-pencil-square-o text-gray-700 cursor-pointer transition-transform hover:scale-125"
+                      aria-hidden="true"
+                    ></i>
+                    <i
+                      data-confirm-modal
+                      data-url="{% url 'folders-delete' folder.id %}"
+                      data-modal-title="Confirm Delete"
+                      data-modal-text="Do you really want to delete this item?"
+                      class="fa fa-trash text-gray-700 cursor-pointer transition-transform hover:scale-125"
+                      aria-hidden="true"
+                    ></i>
+                  </span>
+                </div>
+              </li>
+            {% endfor %}
           </ul>
         </div>
         <div class="flex flex-col w-full">

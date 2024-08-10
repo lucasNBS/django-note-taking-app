@@ -7,6 +7,7 @@ from notes.filters import FilterBaseView
 from notes.models import Note
 from notes.forms import NoteForm, FavoriteNoteForm
 from tags.models import Tag
+from folders.models import Folders
 from accounts.filters import CreatedByUserFilter
 
 class CreateNoteView(BaseContext, CreateView):
@@ -115,3 +116,15 @@ class ListTagNotesView(FilterBaseView):
     )
     self.title = tag.name
     return super().get_queryset(base_qs=self.model.objects.filter(tags__id=tag.id))
+
+class ListFolderNotesView(FilterBaseView):
+  model = Note
+  template_name = 'notes/notes.html'
+  paginate_by = 20
+
+  def get_queryset(self):
+    folder = get_object_or_404(
+      Folders.objects.filter(created_by=self.request.user), id=self.kwargs.get('id')
+    )
+    self.title = folder.name
+    return super().get_queryset(base_qs=self.model.objects.filter(folder__id=folder.id))
