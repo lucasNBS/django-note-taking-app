@@ -1,6 +1,6 @@
 from django.shortcuts import redirect
 
-SHOULD_NOT_BE_LOGGED_IN = ['/accounts/login/', '/accounts/register/']
+SHOULD_NOT_BE_LOGGED_IN = ['/accounts/login/', '/accounts/register/', '/admin/login/']
 
 class LoginRequiredMiddleware:
   def __init__(self, get_response):
