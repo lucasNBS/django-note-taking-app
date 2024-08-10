@@ -12,6 +12,11 @@ class CreateTagView(CreateView):
   form_class = TagForm
   success_url = reverse_lazy('notes-list')
 
+  def get_form_kwargs(self):
+    kwargs = super().get_form_kwargs()
+    kwargs["creator"] = self.request.user
+    return kwargs
+
 class UpdateTagView(UpdateView):
   model = Tag
   pk_url_kwarg = 'id'

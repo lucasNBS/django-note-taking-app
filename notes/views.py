@@ -18,6 +18,11 @@ class CreateNoteView(BaseContext, CreateView):
     context = super().get_context_data(**kwargs)
     context["type"] = "Create"
     return context
+  
+  def get_form_kwargs(self):
+    kwargs = super().get_form_kwargs()
+    kwargs["creator"] = self.request.user
+    return kwargs
 
 class UpdateNoteView(BaseContext, UpdateView):
   model = Note

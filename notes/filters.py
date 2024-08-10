@@ -12,7 +12,9 @@ class FilterBaseView(BaseContext, ListView):
     end_date = request.get('end-date', '')
     tags = request.pop('tags', '')
 
-    qs = base_qs.filter(title__icontains=title)
+    qs = base_qs.filter(created_by=self.request.user)
+
+    qs = qs.filter(title__icontains=title)
 
     if start_date != "":
       qs = qs.filter(created_at__gte=start_date)

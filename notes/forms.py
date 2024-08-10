@@ -15,6 +15,10 @@ class NoteForm(forms.ModelForm):
       'tags': widgets.SelectMultiple(label="Tags")
     }
 
+  def __init__(self, creator=None, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self.creator = creator
+
   def clean_title(self):
     title = self.cleaned_data["title"]
     if len(title) > 50:
@@ -26,6 +30,11 @@ class NoteForm(forms.ModelForm):
     if len(description) > 200:
       raise ValidationError("Max length is 200")
     return description
+  
+  def save(self, *args, **kwargs):
+    if self.creator is not None:
+      self.instance.created_by = self.creator
+    return super().save(*args, **kwargs)
 
 class FavoriteNoteForm(forms.ModelForm):
   
