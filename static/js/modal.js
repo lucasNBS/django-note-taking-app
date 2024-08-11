@@ -17,6 +17,7 @@ const Modal = class {
   open() {
     this.background.classList.remove("-z-10");
     this.background.classList.add("z-50");
+    this.element.querySelectorAll("input")[1]?.focus();
   }
 
   close() {

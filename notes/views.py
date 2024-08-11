@@ -72,6 +72,7 @@ class ListDeletedNoteView(FilterBaseView):
   template_name = 'notes/notes.html'
   paginate_by = 20
   title = "Trash"
+  deactivate = True
 
   def get_queryset(self):
     return super().get_queryset(base_qs=self.model.all_objects.filter(is_deleted=True))

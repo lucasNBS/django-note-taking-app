@@ -45,7 +45,8 @@
           <form class="ml-1" method="post" action="/accounts/logout/">
             {% csrf_token %}
             <button class="text-sm text-red-800">
-              <i class="fa fa-sign-out" aria-hidden="true"></i> Log Out
+              <i class="fa fa-sign-out" aria-hidden="true"></i>
+              <span class="hover:underline">Log Out</span>
             </button>
           </form>
         {% endif %}
@@ -54,7 +55,8 @@
           <ul class="flex flex-col gap-2 text-sm text-gray-700">
             <li>
               <a href="{% url 'notes-list' %}">
-                <i class="fa fa-file-text" aria-hidden="true"></i> All Notes
+                <i class="fa fa-file-text" aria-hidden="true"></i>
+                <span class="hover:underline">All Notes</span>
               </a>
             </li>
             <li>
@@ -62,12 +64,14 @@
             </li>
             <li>
               <a href="{% url 'notes-starreds' %}">
-                <i class="fa fa-star" aria-hidden="true"></i> Starred
+                <i class="fa fa-star" aria-hidden="true"></i>
+                <span class="hover:underline">Starred</span>
               </a>
             </li>
             <li>
               <a href="{% url 'notes-list-deleted' %}">
-                <i class="fa fa-trash" aria-hidden="true"></i> Trash
+                <i class="fa fa-trash" aria-hidden="true"></i>
+                <span class="hover:underline">Trash</span>
               </a>
             </li>
           </ul>
@@ -83,7 +87,7 @@
               class="fa fa-plus cursor-pointer transition-transform hover:scale-110" aria-hidden="true"
             ></i>
           </div>
-          <ul class="mx-1">
+          <ul class="mt-1">
             {% for folder in folders %}
               <li class="tag-item relative rounded-md hover:bg-gray-400 cursor-pointer">
                 <a
@@ -131,7 +135,7 @@
               class="fa fa-plus cursor-pointer transition-transform hover:scale-110" aria-hidden="true"
             ></i>
           </div>
-          <ul class="mx-1">
+          <ul class="mt-1">
             {% for tag in tags %}
               <li class="tag-item relative rounded-md hover:bg-gray-400 cursor-pointer">
                 <a

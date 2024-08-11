@@ -3,7 +3,7 @@
     <div class="flex gap-6">
       {% if page_obj.has_previous %}
         <a
-          class="text-gray-400"
+          class="text-gray-400 hover:cursor-pointer"
           href="?page={{ page_obj.previous_page_number }}&title={{ title }}&start-date={{ start_date }}&end-date={{ end_date }}"
         >
           <i class="fa fa-angle-left fa-2x" aria-hidden="true"></i>
@@ -15,7 +15,7 @@
       {% endif %}
       {% if page_obj.has_next %}
         <a
-          class="text-gray-400"
+          class="text-gray-400 hover:cursor-pointer"
           href="?page={{ page_obj.next_page_number }}&title={{ title }}&start-date={{ start_date }}&end-date={{ end_date }}"
         >
           <i class="fa fa-angle-right fa-2x" aria-hidden="true"></i>

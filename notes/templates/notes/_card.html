@@ -1,5 +1,10 @@
 <article class="flex flex-col bg-gray-100 p-4 rounded-lg gap-2 relative">
-  <a class="note-card-title w-fit z-10" href="{% url 'notes-detail' note.id %}">
+  <a
+    class="note-card-title w-fit z-10"
+    {% if not view.deactivate %}
+      href="{% url 'notes-detail' note.id %}"
+    {% endif %}
+  >
     <h2
       class="font-bold text-xl max-h-20 capitalize overflow-hidden w-fit transition-transform hover:scale-110"
     >
@@ -33,6 +38,11 @@
               id="id_is_liked"
               checked
             />
+            <i
+              data-star
+              class="fa fa-star text-yellow-600 cursor-pointer transition-transform hover:scale-110"
+              aria-hidden="true"
+            ></i>
           {% else %}
             <input
               class="invisible"
@@ -40,14 +50,6 @@
               name="is_liked"
               id="id_is_liked"
             />
-          {% endif %}
-          {% if note.is_liked %}
-            <i
-              data-star
-              class="fa fa-star text-yellow-600 cursor-pointer transition-transform hover:scale-110"
-              aria-hidden="true"
-            ></i>
-          {% else %}
             <i
               data-star
               class="fa fa-star-o text-gray-700 cursor-pointer transition-transform hover:scale-110"
