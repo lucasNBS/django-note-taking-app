@@ -10,9 +10,10 @@ class NoteForm(forms.ModelForm):
 
   class Meta:
     model = Note
-    fields = ['title', 'description', 'tags', 'content']
+    fields = ['title', 'description', 'tags', 'folder', 'content']
     widgets = {
-      'tags': widgets.SelectMultiple(label="Tags")
+      'tags': widgets.SelectMultiple(label="Tags"),
+      'folder': widgets.Select(label="Folder")
     }
 
   def __init__(self, creator=None, *args, **kwargs):

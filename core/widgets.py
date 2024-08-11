@@ -41,3 +41,17 @@ class SelectMultiple(forms.SelectMultiple):
     context["widget"]["label"] = self.label
     context["widget"]["value"] = self.initial_value
     return context
+  
+class Select(forms.Select):
+  template_name = 'widgets/select.html'
+
+  def __init__(self, label=None, initial_value=None, **kwargs):
+    super().__init__(**kwargs)
+    self.label = label
+    self.initial_value = initial_value
+
+  def get_context(self, name, value, attrs):
+    context = super().get_context(name, value, attrs)
+    context["widget"]["label"] = self.label
+    context["widget"]["value"] = self.initial_value
+    return context

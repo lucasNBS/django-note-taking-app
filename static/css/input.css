@@ -42,3 +42,7 @@ li.tag-item:hover div.tag-item-hover {
 .border-b-2 {
   border-bottom-width: 2px;
 }
+
+.top-6px {
+  top: 6px;
+}

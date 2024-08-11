@@ -1,17 +1,17 @@
 <label class="text-lg capitalize font-bold">{{ widget.label }}</label>
-<div data-autocomplete class="w-full">
+<div data-autocomplete-multiple class="w-full">
   <div class="relative">
     <input
-      data-autocomplete-input
+      data-autocomplete-multiple-input
       placeholder="{{ placeholder }}"
       class="w-full py-2 px-4 rounded {{ class }}"
     />
     <div
-      data-autocomplete-sugestions
+      data-autocomplete-multiple-sugestions
       class="absolute bg-white w-full max-h-[200px] border-gray-300 top-[calc(100%+2px)]"
     ></div>
   </div>
-  <div data-autocomplete-selected class="flex gap-2 justify-start items-center mt-2">
+  <div data-autocomplete-multiple-selected class="flex gap-2 justify-start items-center mt-2">
     {% if filter_variant %}      
       {% for tag in tags_selected %}
         <div

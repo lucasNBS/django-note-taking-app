@@ -1,0 +1,25 @@
+<label class="text-lg capitalize font-bold">{{ widget.label }}</label>
+<div data-autocomplete class="w-full relative">
+  <div class="relative">
+    <input
+      data-autocomplete-input
+      placeholder="{{ placeholder }}"
+      class="w-full py-2 px-4 rounded {{ class }}"
+    />
+    <div
+      data-autocomplete-sugestions
+      class="absolute bg-white w-full max-h-[200px] border-gray-300 top-[calc(100%+2px)]"
+    ></div>
+    {% for value in widget.optgroups %}
+        {% if value.1.0.selected %}
+          <span
+            data-value="{{ value.1.0.value }}"
+            data-label="{{ value.1.0.label }}"
+            class="text-xl absolute right-2 top-6px"
+          >
+            &times;
+          </span>
+        {% endif %}  
+      {% endfor %}
+  </div>
+</div>

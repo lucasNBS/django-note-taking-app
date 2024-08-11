@@ -1278,6 +1278,10 @@ li.tag-item:hover div.tag-item-hover {
   border-bottom-width: 2px;
 }
 
+.top-6px {
+  top: 6px;
+}
+
 .hover\:scale-110:hover {
   --tw-scale-x: 1.1;
   --tw-scale-y: 1.1;

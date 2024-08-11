@@ -2,8 +2,8 @@
   const autocomplete = document.querySelectorAll("[data-autocomplete]");
 
   autocomplete.forEach((e) => {
+    const container = e;
     const input = e.querySelector("[data-autocomplete-input]");
-    const selectedContainer = e.querySelector("[data-autocomplete-selected]");
     const sugestionsContainer = e.querySelector(
       "[data-autocomplete-sugestions]"
     );
@@ -22,12 +22,16 @@
 
     let timeout;
     input.addEventListener("keyup", (e) => {
+      if (e.target.readOnly) {
+        return;
+      }
+
       clearTimeout(timeout);
       sugestionsContainer.innerHTML = "";
 
       timeout = setTimeout(async () => {
         const foundTags = await fetch(
-          `http://localhost:8000/tags/autocomplete?search=${e.target.value}`
+          `http://localhost:8000/folders/autocomplete?search=${e.target.value}`
         ).then((res) => res.json());
 
         foundTags.forEach((tag) => {
@@ -38,43 +42,38 @@
           sugestionsContainer.append(dropdownElement);
 
           dropdownElement.addEventListener("click", () => {
-            addTag(tag, input, sugestionsContainer, selectedContainer);
+            select(tag, input, container, sugestionsContainer);
           });
         });
       }, 600);
     });
 
-    const selectedTags = selectedContainer.querySelectorAll("[data-value]");
+    const selected = container.querySelector("[data-value]");
 
-    selectedTags.forEach((tag) => {
-      const checkbox = selectOption({ id: tag.dataset.value }, input);
-      const closeButton = tag.querySelector("[data-remove]");
-      closeButton.addEventListener("click", (e) => {
-        e.target.closest("div").remove();
-        checkbox.click();
-      });
+    const checkbox = selectOption({ id: selected.dataset.value }, input);
+    input.value = selected.dataset.label;
+    input.toggleAttribute("readonly");
+    selected.addEventListener("click", (e) => {
+      e.target.remove();
+      input.toggleAttribute("readonly");
+      input.value = "";
+      checkbox.click();
     });
   });
 
-  function addTag(tag, input, sugestionsContainer, selectedContainer) {
-    const tagOfSelectedItem = selectedContainer.querySelector(
-      `[data-value='${tag.id}']`
-    );
-
-    if (tagOfSelectedItem) {
-      return;
-    }
-
+  function select(tag, input, container, sugestionsContainer) {
+    input.value = tag.name;
+    input.toggleAttribute("readonly");
     const checkbox = selectOption(tag, input);
-    createSelectedItem(tag, selectedContainer, checkbox);
+    createSelectedItem(input, container, checkbox);
     sugestionsContainer.innerHTML = "";
   }
 
   function selectOption(tag, input) {
     const checkbox = document.createElement("input");
     checkbox.setAttribute("type", "checkbox");
-    checkbox.setAttribute("name", "tags");
-    checkbox.setAttribute("id", "id_tags");
+    checkbox.setAttribute("name", "folder");
+    checkbox.setAttribute("id", "id_folder");
     checkbox.setAttribute("value", tag.id);
 
     input.append(checkbox);
@@ -84,34 +83,17 @@
     return checkbox;
   }
 
-  function createSelectedItem(tag, selectedContainer, checkbox) {
-    const tagContainer = document.createElement("div");
-    tagContainer.classList.add(
-      "bg-gray-500",
-      "flex",
-      "items-center",
-      "gap-2",
-      "px-4",
-      "py-2",
-      "rounded-lg",
-      "text-white"
-    );
-    tagContainer.dataset.value = tag.id;
-
-    const nameElement = document.createElement("span");
-    nameElement.innerText = tag.name;
-
+  function createSelectedItem(input, container, checkbox) {
     const closeButton = document.createElement("span");
     closeButton.addEventListener("click", (e) => {
-      e.target.closest("div").remove();
+      e.target.remove();
+      input.toggleAttribute("readonly");
+      input.value = "";
       checkbox.click();
     });
-    closeButton.classList.add("text-xl");
+    closeButton.classList.add("text-xl", "absolute", "right-2", "top-6px");
     closeButton.innerHTML = "&times;";
 
-    tagContainer.append(nameElement);
-    tagContainer.append(closeButton);
-
-    selectedContainer.append(tagContainer);
+    container.append(closeButton);
   }
 }
