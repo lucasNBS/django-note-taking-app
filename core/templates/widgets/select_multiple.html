@@ -19,7 +19,7 @@
           class="bg-gray-500 flex items-center gap-2 px-4 py-2 rounded-lg text-white"
         >
           <span>{{ tag.name }}</span>
-          <span data-remove class="text-xl">&times;</span>
+          <span data-remove class="text-xl cursor-pointer">&times;</span>
         </div>
       {% endfor %}
     {% else %}
@@ -30,7 +30,7 @@
             class="bg-gray-500 flex items-center gap-2 px-4 py-2 rounded-lg text-white"
           >
             <span>{{ value.1.0.label }}</span>
-            <span data-remove class="text-xl">&times;</span>
+            <span data-remove class="text-xl cursor-pointer">&times;</span>
           </div>
         {% endif %}  
       {% endfor %}

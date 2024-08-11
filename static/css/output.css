@@ -664,11 +664,6 @@ video {
   z-index: 20;
 }
 
-.mx-1 {
-  margin-left: 0.25rem;
-  margin-right: 0.25rem;
-}
-
 .mb-4 {
   margin-bottom: 1rem;
 }
@@ -683,6 +678,10 @@ video {
 
 .mt-0\.5 {
   margin-top: 0.125rem;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
 }
 
 .mt-2 {
@@ -703,10 +702,6 @@ video {
 
 .mt-8 {
   margin-top: 2rem;
-}
-
-.mt-1 {
-  margin-top: 0.25rem;
 }
 
 .block {
@@ -1284,6 +1279,11 @@ li.tag-item:hover div.tag-item-hover {
 
 .top-6px {
   top: 6px;
+}
+
+.hover\:bg-gray-300:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(209 213 219 / var(--tw-bg-opacity));
 }
 
 .hover\:scale-110:hover {

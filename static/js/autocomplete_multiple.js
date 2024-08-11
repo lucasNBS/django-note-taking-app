@@ -1,9 +1,9 @@
 {
-  const autocomplete = document.querySelectorAll(
+  const autocompletes = document.querySelectorAll(
     "[data-autocomplete-multiple]"
   );
 
-  autocomplete.forEach((e) => {
+  autocompletes.forEach((e) => {
     const input = e.querySelector("[data-autocomplete-multiple-input]");
     const selectedContainer = e.querySelector(
       "[data-autocomplete-multiple-selected]"
@@ -30,29 +30,36 @@
       sugestionsContainer.innerHTML = "";
 
       timeout = setTimeout(async () => {
-        const foundTags = await fetch(
+        const results = await fetch(
           `http://localhost:8000/tags/autocomplete?search=${e.target.value}`
         ).then((res) => res.json());
 
-        foundTags.forEach((tag) => {
+        results.forEach((option) => {
           const dropdownElement = document.createElement("div");
-          dropdownElement.dataset.value = tag.id;
-          dropdownElement.classList.add("p-2", "border-b-2", "border-gray-300");
-          dropdownElement.innerText = tag.name;
+
+          dropdownElement.classList.add(
+            "p-2",
+            "border-b-2",
+            "border-gray-300",
+            "cursor-pointer",
+            "hover:bg-gray-300"
+          );
+          dropdownElement.dataset.value = option.id;
+          dropdownElement.innerText = option.name;
           sugestionsContainer.append(dropdownElement);
 
           dropdownElement.addEventListener("click", () => {
-            addTag(tag, input, sugestionsContainer, selectedContainer);
+            selectOption(option, input, sugestionsContainer, selectedContainer);
           });
         });
       }, 600);
     });
 
-    const selectedTags = selectedContainer.querySelectorAll("[data-value]");
+    const selectedOptions = selectedContainer.querySelectorAll("[data-value]");
 
-    selectedTags.forEach((tag) => {
-      const checkbox = selectOption({ id: tag.dataset.value }, input);
-      const closeButton = tag.querySelector("[data-remove]");
+    selectedOptions.forEach((option) => {
+      const checkbox = markCheckbox({ id: option.dataset.value }, input);
+      const closeButton = option.querySelector("[data-remove]");
       closeButton.addEventListener("click", (e) => {
         e.target.closest("div").remove();
         checkbox.click();
@@ -60,26 +67,27 @@
     });
   });
 
-  function addTag(tag, input, sugestionsContainer, selectedContainer) {
+  function selectOption(option, input, sugestionsContainer, selectedContainer) {
     const tagOfSelectedItem = selectedContainer.querySelector(
-      `[data-value='${tag.id}']`
+      `[data-value='${option.id}']`
     );
 
     if (tagOfSelectedItem) {
       return;
     }
 
-    const checkbox = selectOption(tag, input);
-    createSelectedItem(tag, selectedContainer, checkbox);
+    const checkbox = markCheckbox(option, input);
+    createSelectedItem(option, selectedContainer, checkbox);
     sugestionsContainer.innerHTML = "";
   }
 
-  function selectOption(tag, input) {
+  function markCheckbox(option, input) {
     const checkbox = document.createElement("input");
+
     checkbox.setAttribute("type", "checkbox");
     checkbox.setAttribute("name", "tags");
     checkbox.setAttribute("id", "id_tags");
-    checkbox.setAttribute("value", tag.id);
+    checkbox.setAttribute("value", option.id);
 
     input.append(checkbox);
 
@@ -88,9 +96,9 @@
     return checkbox;
   }
 
-  function createSelectedItem(tag, selectedContainer, checkbox) {
-    const tagContainer = document.createElement("div");
-    tagContainer.classList.add(
+  function createSelectedItem(option, selectedContainer, checkbox) {
+    const optionContainer = document.createElement("div");
+    optionContainer.classList.add(
       "bg-gray-500",
       "flex",
       "items-center",
@@ -100,22 +108,22 @@
       "rounded-lg",
       "text-white"
     );
-    tagContainer.dataset.value = tag.id;
+    optionContainer.dataset.value = option.id;
 
     const nameElement = document.createElement("span");
-    nameElement.innerText = tag.name;
+    nameElement.innerText = option.name;
 
     const closeButton = document.createElement("span");
     closeButton.addEventListener("click", (e) => {
       e.target.closest("div").remove();
       checkbox.click();
     });
-    closeButton.classList.add("text-xl");
+    closeButton.classList.add("text-xl", "cursor-pointer");
     closeButton.innerHTML = "&times;";
 
-    tagContainer.append(nameElement);
-    tagContainer.append(closeButton);
+    optionContainer.append(nameElement);
+    optionContainer.append(closeButton);
 
-    selectedContainer.append(tagContainer);
+    selectedContainer.append(optionContainer);
   }
 }
