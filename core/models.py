@@ -17,3 +17,5 @@ class SoftDeleteModel(models.Model):
   class Meta:
     abstract = True
 
+class ShareableModel(models.Model):
+  id = models.AutoField(primary_key=True)

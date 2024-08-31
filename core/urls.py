@@ -27,4 +27,5 @@ urlpatterns = [
     path('tags/', include('tags.urls')),
     path('accounts/', include('accounts.urls')),
     path('folders/', include('folders.urls')),
+    path('permissions/', include('permissions.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -3,9 +3,10 @@ from django.db import models
 from tags.models import Tag
 from accounts.models import User
 from folders.models import Folders
+from core.models import ShareableModel
 
 # Create your models here.
-class Note(SoftDeleteModel):
+class Note(ShareableModel, SoftDeleteModel):
   title = models.CharField(max_length=50, blank=False, null=False)
   description = models.CharField(max_length=200, blank=False, null=False)
   content = models.TextField(blank=False, null=False)

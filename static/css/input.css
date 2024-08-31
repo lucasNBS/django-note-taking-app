@@ -51,3 +51,7 @@ li.tag-item:hover div.tag-item-hover {
   --tw-bg-opacity: 1;
   background-color: rgb(209 213 219 / var(--tw-bg-opacity));
 }
+
+.h-\[40px\] {
+  height: 40px;
+}

@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'tags',
     'folders',
     'accounts',
+    'permissions',
 ]
 
 MIDDLEWARE = [

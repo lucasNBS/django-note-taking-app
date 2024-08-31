@@ -1,8 +1,9 @@
 from django.db import models
 from accounts.models import User
+from core.models import ShareableModel
 
 # Create your models here.
-class Folders(models.Model):
+class Folders(ShareableModel):
   name = models.CharField(max_length=50)
   created_by = models.ForeignKey(User, on_delete=models.PROTECT)
 
