@@ -60,7 +60,10 @@
               </a>
             </li>
             <li>
-              <span><i class="fa fa-users" aria-hidden="true"></i> Shared</span>
+              <a href="{% url 'notes-shared' %}">
+                <i class="fa fa-users" aria-hidden="true"></i>
+                <span class="hover:underline">Shared</span>
+              </a>
             </li>
             <li>
               <a href="{% url 'notes-starreds' %}">

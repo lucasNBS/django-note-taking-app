@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.db.models.base import Model as Model
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
@@ -6,9 +7,11 @@ from core.views import BaseContext
 from notes.filters import FilterBaseView
 from notes.models import Note, Like
 from notes.forms import NoteForm, FavoriteNoteForm
+from core.choices import DataType
 from tags.models import Tag
 from folders.models import Folders
 from permissions.models import Permission
+from permissions.choices import PermissionType
 from core.choices import DataType
 
 class CreateNoteView(BaseContext, CreateView):
@@ -139,3 +142,17 @@ class ListFolderNotesView(FilterBaseView):
       self.title = folder.title
       notes = Note.objects.filter(folder=folder)
       return super().get_queryset(base_qs=notes)
+
+class ListSharedNoteView(FilterBaseView):
+  model = Note
+  template_name = 'notes/notes.html'
+  paginate_by = 20
+  title = "Shared"
+
+  def get_queryset(self):
+    notes_user_has_access = Permission.objects.filter(
+      user=self.request.user, data__type=DataType.NOTE
+    ).filter(
+      Q(type=PermissionType.EDITOR) | Q(type=PermissionType.READER)
+    ).values_list("data__id", flat=True)
+    return super().get_queryset(base_qs=self.model.objects.filter(id__in=notes_user_has_access))
