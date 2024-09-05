@@ -24,13 +24,13 @@
           <i class="fa fa-undo text-gray-700" aria-hidden="true"></i>
         </span>
       {% else %}
-        <form
-          data-favorite-note
-          action="{% url 'notes-starred' note.id %}"
-          method="post"
-        >
-          {% csrf_token %}
-          {% if note.is_liked %}
+        {% if note.id in likes_id or view.liked %}
+          <form
+            data-favorite-note
+            action="{% url 'notes-starred' note.id %}"
+            method="post"
+          >
+            {% csrf_token %}
             <input
               class="invisible"
               type="checkbox"
@@ -43,7 +43,14 @@
               class="fa fa-star text-yellow-600 cursor-pointer transition-transform hover:scale-110"
               aria-hidden="true"
             ></i>
-          {% else %}
+          </form>
+        {% else %}
+          <form
+            data-favorite-note
+            action="{% url 'notes-starred' note.id %}"
+            method="post"
+          >
+            {% csrf_token %}
             <input
               class="invisible"
               type="checkbox"
@@ -55,8 +62,8 @@
               class="fa fa-star-o text-gray-700 cursor-pointer transition-transform hover:scale-110"
               aria-hidden="true"
             ></i>
-          {% endif %}
-        </form>
+          </form>
+        {% endif %}
         <a
           class="transition-transform hover:scale-110"
           href="{% url 'notes-update' note.id %}"

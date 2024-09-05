@@ -1,6 +1,7 @@
+from typing import Any
 from django import forms
 from django.core.exceptions import ValidationError
-from notes.models import Note
+from notes.models import Note, Like
 from core import widgets
 
 class NoteForm(forms.ModelForm):
@@ -40,5 +41,14 @@ class NoteForm(forms.ModelForm):
 class FavoriteNoteForm(forms.ModelForm):
   
   class Meta:
-    model = Note
-    fields = ['is_liked',]
+    model = Like
+    fields = ['user', 'note']
+
+  def save(self, *args, **kwargs):
+    like = Like.objects.filter(user=self.data['user'], note__id=self.data['note'])
+
+    if len(like) > 0:
+      like.delete()
+      return self
+
+    return super().save(*args, **kwargs)

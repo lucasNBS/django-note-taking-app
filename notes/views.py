@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DetailView, DeleteView
 from core.views import BaseContext
 from notes.filters import FilterBaseView
-from notes.models import Note
+from notes.models import Note, Like
 from notes.forms import NoteForm, FavoriteNoteForm
 from tags.models import Tag
 from folders.models import Folders
@@ -58,6 +58,12 @@ class ListNoteView(FilterBaseView):
 
   def get_queryset(self):
     return super().get_queryset(base_qs=self.model.objects)
+  
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    likes_id = Like.objects.filter(user=self.request.user).values_list('note__id', flat=True)
+    context["likes_id"] = likes_id
+    return context
 
 class ListDeletedNoteView(FilterBaseView):
   model = Note
@@ -83,21 +89,29 @@ def restore_note_view(request, id):
     note.restore()
   return redirect('notes-list')
 
-class FavoriteNoteView(UpdateView):
-  model = Note
-  pk_url_kwarg = 'id'
+class FavoriteNoteView(CreateView):
+  model = Like
   template_name = 'notes/form.html'
   success_url = reverse_lazy('notes-list')
-  form_class = FavoriteNoteForm
+
+  def get_form(self):
+    form = super().get_form(FavoriteNoteForm)
+    data = form.data.copy()
+    data['user'] = self.request.user
+    data['note'] = self.kwargs.get('id')
+    form.data = data
+    return form
 
 class ListFavoriteNoteView(FilterBaseView):
   model = Note
   template_name = 'notes/notes.html'
   paginate_by = 20
   title = "Starred"
+  liked = True
 
   def get_queryset(self):
-    return super().get_queryset(base_qs=self.model.objects.filter(is_liked=True))
+    likes_id = Like.objects.filter(user=self.request.user).values_list('note__id', flat=True)
+    return super().get_queryset(base_qs=self.model.objects.filter(id__in=likes_id))
 
 class ListTagNotesView(FilterBaseView):
   model = Note
