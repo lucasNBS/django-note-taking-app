@@ -3,4 +3,4 @@ from tags.models import Tag
 
 @admin.register(Tag)
 class NoteAdmin(admin.ModelAdmin):
-  list_display = ('name',)
+  list_display = ('title',)

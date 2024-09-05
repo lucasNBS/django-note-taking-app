@@ -2,7 +2,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from core.views import BaseContext
 
-from . import models, forms
+from . import models, forms, choices
 
 class ListNotePermissions(BaseContext, ListView):
   model = models.Permission
@@ -11,7 +11,7 @@ class ListNotePermissions(BaseContext, ListView):
 
   def get_queryset(self):
     id = self.kwargs["note_id"]
-    return models.Permission.objects.filter(data__id=id)
+    return models.Permission.objects.filter(data__id=id).exclude(type=choices.PermissionType.CREATOR)
   
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)

@@ -4,23 +4,23 @@ from core.widgets import InputField
 from .models import Folders
 
 class FolderForm(forms.ModelForm):
-  name = forms.CharField(widget=InputField(label='Name'))
+  title = forms.CharField(widget=InputField(label='Title'))
 
   class Meta:
     model = Folders
-    fields = ('name',)
+    fields = ('title',)
 
   def __init__(self, creator=None, *args, **kwargs):
     super().__init__(*args, **kwargs)
     self.creator = creator
 
-  def clean_name(self):
-    name = self.cleaned_data["name"]
-    if len(name) > 50:
+  def clean_title(self):
+    title = self.cleaned_data["title"]
+    if len(title) > 50:
       raise ValidationError("Max length is 50")
-    return name
+    return title
   
   def save(self, *args, **kwargs):
     if self.creator is not None:
-      self.instance.created_by = self.creator    
+      self.instance.created_by = self.creator
     return super().save(*args, **kwargs)

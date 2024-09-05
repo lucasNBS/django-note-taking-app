@@ -8,7 +8,7 @@
   modal.element.querySelector("form").addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const input = modal.element.querySelector("input#id_name");
+    const input = modal.element.querySelector("input#id_title");
 
     if (input.value.length > 50) {
       const error = this.element.querySelector("[data-modal-error]");
@@ -24,7 +24,7 @@
       modal.element.querySelector("[data-modal-title]").innerText =
         button.dataset.modalTitle;
       modal.element
-        .querySelector("input#id_name")
+        .querySelector("input#id_title")
         .setAttribute("value", button.dataset.modalValue);
       modal.element.querySelector("[data-modal-form]").action =
         button.dataset.url;

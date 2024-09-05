@@ -45,8 +45,8 @@
             "hover:bg-gray-300"
           );
           dropdownElement.dataset.value = option.id;
-          dropdownElement.innerText = option.name;
-          sugestionsContainer.append(dropdownElement);
+          dropdownElement.innerText = option.title;
+          sugestionsContainer.appendChild(dropdownElement);
 
           dropdownElement.addEventListener("click", () => {
             selectOption(option, input, sugestionsContainer, selectedContainer);
@@ -111,7 +111,7 @@
     optionContainer.dataset.value = option.id;
 
     const nameElement = document.createElement("span");
-    nameElement.innerText = option.name;
+    nameElement.innerText = option.title;
 
     const closeButton = document.createElement("span");
     closeButton.addEventListener("click", (e) => {

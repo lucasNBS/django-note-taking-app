@@ -1,4 +1,4 @@
-<article class="flex flex-col bg-gray-100 p-4 rounded-lg gap-2 relative">
+<article class="flex flex-col bg-gray-100 p-4 rounded-lg gap-2 relative z-0">
   <a
     class="note-card-title w-fit z-10"
     {% if not view.deactivate %}
@@ -6,7 +6,7 @@
     {% endif %}
   >
     <h2
-      class="font-bold text-xl max-h-20 capitalize overflow-hidden w-fit transition-transform hover:scale-110"
+      class="font-bold text-xl max-h-20 capitalize cursor-pointer overflow-hidden w-fit transition-transform hover:scale-110"
     >
       {{ note.title }}
     </h2>

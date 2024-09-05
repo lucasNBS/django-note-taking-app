@@ -8,7 +8,7 @@
     />
     <div
       data-autocomplete-multiple-sugestions
-      class="absolute bg-white w-full max-h-[200px] border-gray-300 top-[calc(100%+2px)]"
+      class="absolute bg-white w-full max-h-[200px] border-gray-300 top-[calc(100%+2px)] z-10"
     ></div>
   </div>
   <div data-autocomplete-multiple-selected class="flex gap-2 justify-start items-center mt-2">
@@ -18,7 +18,7 @@
           data-value="{{ tag.value }}"
           class="bg-gray-500 flex items-center gap-2 px-4 py-2 rounded-lg text-white"
         >
-          <span>{{ tag.name }}</span>
+          <span>{{ tag.title }}</span>
           <span data-remove class="text-xl cursor-pointer">&times;</span>
         </div>
       {% endfor %}

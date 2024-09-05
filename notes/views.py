@@ -8,7 +8,8 @@ from notes.models import Note
 from notes.forms import NoteForm, FavoriteNoteForm
 from tags.models import Tag
 from folders.models import Folders
-from accounts.filters import CreatedByUserFilter
+from permissions.models import Permission
+from core.choices import DataType
 
 class CreateNoteView(BaseContext, CreateView):
   model = Note
@@ -25,9 +26,6 @@ class CreateNoteView(BaseContext, CreateView):
     kwargs = super().get_form_kwargs()
     kwargs["creator"] = self.request.user
     return kwargs
-  
-  def get_queryset(self):
-    return super().get_queryset(self.model.objects.all())
 
 class UpdateNoteView(BaseContext, UpdateView):
   model = Note
@@ -40,32 +38,26 @@ class UpdateNoteView(BaseContext, UpdateView):
     context = super().get_context_data(**kwargs)
     context["type"] = "Update"
     return context
-  
-  def get_queryset(self):
-    return super().get_queryset(self.model.objects.all())
 
-class DeleteNoteView(CreatedByUserFilter, DeleteView):
+class DeleteNoteView(DeleteView):
   model = Note
   pk_url_kwarg = 'id'
   template_name = 'notes/confirm_delete.html'
   success_url = reverse_lazy('notes-list')
-  
-  def get_queryset(self):
-    return super().get_queryset(self.model.objects.all())
 
 class DetailNoteView(BaseContext, DetailView):
   model = Note
   pk_url_kwarg = 'id'
   template_name = 'notes/note.html'
 
-  def get_queryset(self):
-    return super().get_queryset(self.model.objects.all())
-
 class ListNoteView(FilterBaseView):
   model = Note
   template_name = 'notes/notes.html'
   paginate_by = 20
   title = "All Notes"
+
+  def get_queryset(self):
+    return super().get_queryset(base_qs=self.model.objects)
 
 class ListDeletedNoteView(FilterBaseView):
   model = Note
@@ -83,19 +75,20 @@ class ListDeletedNoteView(FilterBaseView):
     return context
 
 def restore_note_view(request, id):
-  note = Note.all_objects.filter(created_by=request.user).get(id=id)
-  note.restore()
+  permission_exists = Permission.objects.filter(
+    user=request.user, data__type=DataType.NOTE, data__id=id
+  ).exists()
+  if permission_exists:
+    note = Note.all_objects.filter(is_deleted=True).get(id=id)
+    note.restore()
   return redirect('notes-list')
 
-class FavoriteNoteView(BaseContext, UpdateView):
+class FavoriteNoteView(UpdateView):
   model = Note
   pk_url_kwarg = 'id'
   template_name = 'notes/form.html'
   success_url = reverse_lazy('notes-list')
   form_class = FavoriteNoteForm
-
-  def get_queryset(self):
-    return super().get_queryset(self.model.objects.all())
 
 class ListFavoriteNoteView(FilterBaseView):
   model = Note
@@ -115,7 +108,7 @@ class ListTagNotesView(FilterBaseView):
     tag = get_object_or_404(
       Tag.objects.filter(created_by=self.request.user), id=self.kwargs.get('id')
     )
-    self.title = tag.name
+    self.title = tag.title
     return super().get_queryset(base_qs=self.model.objects.filter(tags__id=tag.id))
 
 class ListFolderNotesView(FilterBaseView):
@@ -124,8 +117,11 @@ class ListFolderNotesView(FilterBaseView):
   paginate_by = 20
 
   def get_queryset(self):
-    folder = get_object_or_404(
-      Folders.objects.filter(created_by=self.request.user), id=self.kwargs.get('id')
-    )
-    self.title = folder.name
-    return super().get_queryset(base_qs=self.model.objects.filter(folder__id=folder.id))
+    permission_exists = Permission.objects.filter(
+      user=self.request.user, data__type=DataType.FOLDER, data__id=self.kwargs.get('id')
+    ).exists()
+    if permission_exists:
+      folder = Folders.objects.get(id=self.kwargs.get('id'))
+      self.title = folder.title
+      notes = Note.objects.filter(folder=folder)
+      return super().get_queryset(base_qs=notes)

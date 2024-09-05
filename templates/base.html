@@ -97,7 +97,7 @@
                   <span
                     class="flex gap-2 items-center text-sm text-gray-700 overflow-hidden max-w-[calc(100%-53px)]"
                   >
-                    <i class="fa fa-folder" aria-hidden="true"></i> {{ folder.name }}
+                    <i class="fa fa-folder" aria-hidden="true"></i> {{ folder.title }}
                   </span>
                 </a>
                 <div class="tag-item-hover absolute top-0 right-0 w-max h-full opacity-0">
@@ -106,7 +106,7 @@
                       data-form-modal
                       data-url="{% url 'folders-update' folder.id %}"
                       data-modal-title="Update Folder"
-                      data-modal-value="{{ folder.name }}"
+                      data-modal-value="{{ folder.title }}"
                       class="fa fa-pencil-square-o text-gray-700 cursor-pointer transition-transform hover:scale-125"
                       aria-hidden="true"
                     ></i>
@@ -145,7 +145,7 @@
                   <span
                     class="flex gap-2 items-center text-sm text-gray-700 overflow-hidden max-w-[calc(100%-53px)]"
                   >
-                    <i class="fa fa-tag" aria-hidden="true"></i> {{ tag.name }}
+                    <i class="fa fa-tag" aria-hidden="true"></i> {{ tag.title }}
                   </span>
                 </a>
                 <div class="tag-item-hover absolute top-0 right-0 w-max h-full opacity-0">
@@ -154,7 +154,7 @@
                       data-form-modal
                       data-url="{% url 'tags-update' tag.id %}"
                       data-modal-title="Update Tag"
-                      data-modal-value="{{ tag.name }}"
+                      data-modal-value="{{ tag.title }}"
                       class="fa fa-pencil-square-o text-gray-700 cursor-pointer transition-transform hover:scale-125"
                       aria-hidden="true"
                     ></i>

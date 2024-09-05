@@ -1,11 +1,16 @@
 from django.views.generic import ListView
-from .models import Note
 from tags.models import Tag
 from core.views import BaseContext
 
+from permissions.models import Permission
+from core.choices import DataType
+
 class FilterBaseView(BaseContext, ListView):
-  def get_queryset(self, base_qs=Note.objects.all()):
-    qs = super().get_queryset(base_qs)
+  def get_queryset(self, base_qs):
+    notes_user_has_access_ids = Permission.objects.filter(
+      user=self.request.user, data__type=DataType.NOTE
+    ).values_list("data__id", flat=True)
+    notes = base_qs.filter(id__in=notes_user_has_access_ids)
 
     request = self.request.GET.copy()
 
@@ -14,18 +19,18 @@ class FilterBaseView(BaseContext, ListView):
     end_date = request.get('end-date', '')
     tags = request.pop('tags', '')
 
-    qs = qs.filter(title__icontains=title)
+    notes = notes.filter(title__icontains=title)
 
     if start_date != "":
-      qs = qs.filter(created_at__gte=start_date)
+      notes = notes.filter(created_at__gte=start_date)
 
     if end_date != "":
-      qs = qs.filter(created_at__lte=end_date)
+      notes = notes.filter(created_at__lte=end_date)
 
     if len(tags) > 0:
-      qs = qs.filter(tags__id__in=tags).distinct()
+      notes = notes.filter(tags__id__in=tags).distinct()
 
-    return qs.order_by('created_at')
+    return notes.order_by('created_at')
   
   def get_context_data(self, **kwargs):
     request = self.request.GET.copy()
@@ -39,7 +44,7 @@ class FilterBaseView(BaseContext, ListView):
 
     tags = Tag.objects.filter(id__in=tags_selected).distinct()
 
-    context["tags_selected"] = [{ 'name': tag.name, 'value': tag.id } for tag in tags]
+    context["tags_selected"] = [{ 'title': tag.title, 'value': tag.id } for tag in tags]
     context["filter_variant"] = True
 
     return context

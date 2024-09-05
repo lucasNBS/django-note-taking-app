@@ -45,7 +45,7 @@
             "hover:bg-gray-300"
           );
           dropdownElement.dataset.value = option.id;
-          dropdownElement.innerText = option.name;
+          dropdownElement.innerText = option.title;
           sugestionsContainer.append(dropdownElement);
 
           dropdownElement.addEventListener("click", () => {
@@ -73,7 +73,7 @@
   });
 
   function selectOption(option, input, autocomplete, sugestionsContainer) {
-    input.value = option.name;
+    input.value = option.title;
     input.setAttribute("readonly", "true");
     const checkbox = markCheckbox(option, input);
     createSelectedItem(input, autocomplete, checkbox);
