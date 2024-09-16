@@ -49,9 +49,16 @@ class DeleteNoteView(DeleteView):
   success_url = reverse_lazy('notes-list')
 
 class DetailNoteView(BaseContext, DetailView):
-  model = Note
   pk_url_kwarg = 'id'
   template_name = 'notes/note.html'
+
+  def get_object(self):
+    return Permission.objects.get(
+      user=self.request.user,
+      data__type=DataType.NOTE,
+      data__note__is_deleted=False,
+      data__id=self.kwargs.get('id')
+    )
 
 class ListNoteView(FilterNoteBaseView):
   template_name = 'notes/notes.html'

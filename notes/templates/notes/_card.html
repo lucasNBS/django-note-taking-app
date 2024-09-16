@@ -65,22 +65,26 @@
             ></i>
           </form>
         {% endif %}
-        <a
-          class="transition-transform hover:scale-110"
-          href="{% url 'notes-update' note.data.id %}"
-        >
-          <i class="fa fa-pencil-square-o text-gray-700" aria-hidden="true"></i>
-        </a>
-        <span
-          data-url="{% url 'notes-delete' note.data.id %}"
-          data-confirm-modal
-          data-modal-title="Confirm Delete"
-          data-modal-text="Do you really want to delete this item?"
-          class="cursor-pointer transition-transform hover:scale-110"
-        >
-          <i class="fa fa-trash text-gray-700" aria-hidden="true"></i>
-        </span>
-      {% endif %}
+        {% if note.type != 'READER' %}
+          <a
+            class="transition-transform hover:scale-110"
+            href="{% url 'notes-update' note.data.id %}"
+          >
+            <i class="fa fa-pencil-square-o text-gray-700" aria-hidden="true"></i>
+          </a>
+        {% endif %}
+        {% if note.type == 'CREATOR' %}
+          <span
+            data-url="{% url 'notes-delete' note.data.id %}"
+            data-confirm-modal
+            data-modal-title="Confirm Delete"
+            data-modal-text="Do you really want to delete this item?"
+            class="cursor-pointer transition-transform hover:scale-110"
+          >
+            <i class="fa fa-trash text-gray-700" aria-hidden="true"></i>
+          </span>
+          {% endif %}
+        {% endif %}
     </div>
   </div>
   <p class="text-xs max-h-48 overflow-hidden">{{ note.data.note.description }}</p>
