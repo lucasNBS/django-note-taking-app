@@ -1,21 +1,22 @@
+{% load utils %}
 <article class="flex flex-col bg-gray-100 p-4 rounded-lg gap-2 relative z-0">
   <a
     class="note-card-title w-fit z-10"
     {% if not view.deactivate %}
-      href="{% url 'notes-detail' note.id %}"
+      href="{% url 'notes-detail' note.data.id %}"
     {% endif %}
   >
     <h2
       class="font-bold text-xl max-h-20 capitalize cursor-pointer overflow-hidden w-fit transition-transform hover:scale-110"
     >
-      {{ note.title }}
+      {{ note.data.title }}
     </h2>
   </a>
   <div class="note-card-hover opacity-0 hover:opacity-100 absolute w-full h-full left-0 top-0">
     <div class="flex gap-2 py-2 px-3 absolute right-0 top-0">
       {% if deleted %}
         <span
-          data-url="{% url 'notes-restore' note.id %}"
+          data-url="{% url 'notes-restore' note.data.id %}"
           data-confirm-modal
           data-modal-title="Confirm Restore"
           data-modal-text="Do you really want to restore this item?"
@@ -24,10 +25,10 @@
           <i class="fa fa-undo text-gray-700" aria-hidden="true"></i>
         </span>
       {% else %}
-        {% if note.id in likes_id or view.liked %}
+        {% if note.data.note.like_set.all|filter_current_user_like:user %}
           <form
             data-favorite-note
-            action="{% url 'notes-starred' note.id %}"
+            action="{% url 'notes-starred' note.data.id %}"
             method="post"
           >
             {% csrf_token %}
@@ -47,7 +48,7 @@
         {% else %}
           <form
             data-favorite-note
-            action="{% url 'notes-starred' note.id %}"
+            action="{% url 'notes-starred' note.data.id %}"
             method="post"
           >
             {% csrf_token %}
@@ -66,12 +67,12 @@
         {% endif %}
         <a
           class="transition-transform hover:scale-110"
-          href="{% url 'notes-update' note.id %}"
+          href="{% url 'notes-update' note.data.id %}"
         >
           <i class="fa fa-pencil-square-o text-gray-700" aria-hidden="true"></i>
         </a>
         <span
-          data-url="{% url 'notes-delete' note.id %}"
+          data-url="{% url 'notes-delete' note.data.id %}"
           data-confirm-modal
           data-modal-title="Confirm Delete"
           data-modal-text="Do you really want to delete this item?"
@@ -82,9 +83,9 @@
       {% endif %}
     </div>
   </div>
-  <p class="text-xs max-h-48 overflow-hidden">{{ note.description }}</p>
+  <p class="text-xs max-h-48 overflow-hidden">{{ note.data.note.description }}</p>
   <div class="flex gap-2 overflow-hidden">
-    {% for tag in note.tags.all %}
+    {% for tag in note.data.note.tags.all %}
       {% include 'tags/_tag.html' %}
     {% endfor %}
   </div>

@@ -4,7 +4,7 @@ from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DetailView, DeleteView
 from core.views import BaseContext
-from notes.filters import FilterBaseView
+from notes.filters import FilterNoteBaseView
 from notes.models import Note, Like
 from notes.forms import NoteForm, FavoriteNoteForm
 from core.choices import DataType
@@ -53,30 +53,25 @@ class DetailNoteView(BaseContext, DetailView):
   pk_url_kwarg = 'id'
   template_name = 'notes/note.html'
 
-class ListNoteView(FilterBaseView):
-  model = Note
+class ListNoteView(FilterNoteBaseView):
   template_name = 'notes/notes.html'
   paginate_by = 20
   title = "All Notes"
 
   def get_queryset(self):
-    return super().get_queryset(base_qs=self.model.objects)
-  
-  def get_context_data(self, **kwargs):
-    context = super().get_context_data(**kwargs)
-    likes_id = Like.objects.filter(user=self.request.user).values_list('note__id', flat=True)
-    context["likes_id"] = likes_id
-    return context
+    user_notes_permissions = super().get_queryset()
+    return user_notes_permissions.filter(data__note__is_deleted=False)
 
-class ListDeletedNoteView(FilterBaseView):
-  model = Note
+class ListDeletedNoteView(FilterNoteBaseView):
   template_name = 'notes/notes.html'
   paginate_by = 20
   title = "Trash"
   deactivate = True
 
   def get_queryset(self):
-    return super().get_queryset(base_qs=self.model.all_objects.filter(is_deleted=True))
+    user_notes_permissions = super().get_queryset()
+    user_deleted_notes_permissions = user_notes_permissions.filter(data__note__is_deleted=True)
+    return user_deleted_notes_permissions
   
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
@@ -105,31 +100,38 @@ class FavoriteNoteView(CreateView):
     form.data = data
     return form
 
-class ListFavoriteNoteView(FilterBaseView):
-  model = Note
+class ListFavoriteNoteView(FilterNoteBaseView):
   template_name = 'notes/notes.html'
   paginate_by = 20
   title = "Starred"
-  liked = True
 
   def get_queryset(self):
-    likes_id = Like.objects.filter(user=self.request.user).values_list('note__id', flat=True)
-    return super().get_queryset(base_qs=self.model.objects.filter(id__in=likes_id))
+    user_notes_permissions = super().get_queryset()
+    user_active_notes_permissions = user_notes_permissions.filter(data__note__is_deleted=False)
 
-class ListTagNotesView(FilterBaseView):
-  model = Note
+    liked_notes_permissions_ids = []
+
+    for permission in user_active_notes_permissions:
+      if permission.data.note.like_set.filter(user=self.request.user).exists():
+        liked_notes_permissions_ids.append(permission.id)
+
+    return user_active_notes_permissions.filter(id__in=liked_notes_permissions_ids)
+
+class ListTagNotesView(FilterNoteBaseView):
   template_name = 'notes/notes.html'
   paginate_by = 20
 
   def get_queryset(self):
+    user_notes_permissions = super().get_queryset()
+
     tag = get_object_or_404(
       Tag.objects.filter(created_by=self.request.user), id=self.kwargs.get('id')
     )
     self.title = tag.title
-    return super().get_queryset(base_qs=self.model.objects.filter(tags__id=tag.id))
 
-class ListFolderNotesView(FilterBaseView):
-  model = Note
+    return user_notes_permissions.filter(data__note__is_deleted=False, data__note__tags__id=tag.id)
+
+class ListFolderNotesView(FilterNoteBaseView):
   template_name = 'notes/notes.html'
   paginate_by = 20
 
@@ -138,21 +140,20 @@ class ListFolderNotesView(FilterBaseView):
       user=self.request.user, data__type=DataType.FOLDER, data__id=self.kwargs.get('id')
     ).exists()
     if permission_exists:
+      user_notes_permissions = super().get_queryset()
+
       folder = Folders.objects.get(id=self.kwargs.get('id'))
       self.title = folder.title
-      notes = Note.objects.filter(folder=folder)
-      return super().get_queryset(base_qs=notes)
 
-class ListSharedNoteView(FilterBaseView):
-  model = Note
+      return user_notes_permissions.filter(data__note__is_deleted=False, data__note__folder=folder)
+
+class ListSharedNoteView(FilterNoteBaseView):
   template_name = 'notes/notes.html'
   paginate_by = 20
   title = "Shared"
 
   def get_queryset(self):
-    notes_user_has_access = Permission.objects.filter(
-      user=self.request.user, data__type=DataType.NOTE
-    ).filter(
+    user_notes_permissions = super().get_queryset()
+    return user_notes_permissions.filter(data__note__is_deleted=False).filter(
       Q(type=PermissionType.EDITOR) | Q(type=PermissionType.READER)
-    ).values_list("data__id", flat=True)
-    return super().get_queryset(base_qs=self.model.objects.filter(id__in=notes_user_has_access))
+    )
