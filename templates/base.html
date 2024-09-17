@@ -95,32 +95,36 @@
               <li class="tag-item relative rounded-md hover:bg-gray-400 cursor-pointer">
                 <a
                   class="flex justify-between py-2 px-3"
-                  href="{% url 'notes-list-folder' folder.id %}"
+                  href="{% url 'notes-list-folder' folder.data.id %}"
                 >
                   <span
                     class="flex gap-2 items-center text-sm text-gray-700 overflow-hidden max-w-[calc(100%-53px)]"
                   >
-                    <i class="fa fa-folder" aria-hidden="true"></i> {{ folder.title }}
+                    <i class="fa fa-folder" aria-hidden="true"></i> {{ folder.data.title }}
                   </span>
                 </a>
                 <div class="tag-item-hover absolute top-0 right-0 w-max h-full opacity-0">
                   <span class="flex h-full gap-2 justify-end mr-3 items-center text-sm text-gray-700">
-                    <i
-                      data-form-modal
-                      data-url="{% url 'folders-update' folder.id %}"
-                      data-modal-title="Update Folder"
-                      data-modal-value="{{ folder.title }}"
-                      class="fa fa-pencil-square-o text-gray-700 cursor-pointer transition-transform hover:scale-125"
-                      aria-hidden="true"
-                    ></i>
-                    <i
-                      data-confirm-modal
-                      data-url="{% url 'folders-delete' folder.id %}"
-                      data-modal-title="Confirm Delete"
-                      data-modal-text="Do you really want to delete this item?"
-                      class="fa fa-trash text-gray-700 cursor-pointer transition-transform hover:scale-125"
-                      aria-hidden="true"
-                    ></i>
+                    {% if folder.type != 'READER' %}
+                      <i
+                        data-form-modal
+                        data-url="{% url 'folders-update' folder.data.id %}"
+                        data-modal-title="Update Folder"
+                        data-modal-value="{{ folder.data.title }}"
+                        class="fa fa-pencil-square-o text-gray-700 cursor-pointer transition-transform hover:scale-125"
+                        aria-hidden="true"
+                      ></i>
+                    {% endif %}
+                    {% if folder.type == 'CREATOR' %}
+                      <i
+                        data-confirm-modal
+                        data-url="{% url 'folders-delete' folder.data.id %}"
+                        data-modal-title="Confirm Delete"
+                        data-modal-text="Do you really want to delete this item?"
+                        class="fa fa-trash text-gray-700 cursor-pointer transition-transform hover:scale-125"
+                        aria-hidden="true"
+                      ></i>
+                    {% endif %}
                   </span>
                 </div>
               </li>

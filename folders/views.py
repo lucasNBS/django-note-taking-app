@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -28,11 +29,40 @@ class UpdateFolder(UpdateView):
   success_url = reverse_lazy('notes-list')
   pk_url_kwarg = 'id'
 
+  def get_object(self, **kwargs):
+    obj = super().get_object(**kwargs)
+
+    permission = Permission.objects.filter(
+      user=self.request.user,
+      data__id=obj.id,
+      data__type=DataType.FOLDER,
+    ).exclude(type=PermissionType.READER).exists()
+
+    if not permission:
+      raise PermissionDenied("You cannot perform this action")
+
+    return obj
+
 class DeleteFolder(DeleteView):
   model = Folders
   template_name = 'folders/confirm_delete.html'
   success_url = reverse_lazy('notes-list')
   pk_url_kwarg = 'id'
+
+  def get_object(self, **kwargs):
+    obj = super().get_object(**kwargs)
+
+    permission = Permission.objects.filter(
+      user=self.request.user,
+      data__id=obj.id,
+      data__type=DataType.FOLDER,
+      type=PermissionType.CREATOR,
+    ).exists()
+
+    if not permission:
+      raise PermissionDenied("You cannot perform this action")
+
+    return obj
 
 def autocomplete_folder_view(request):
   search = request.GET.get('search')
@@ -47,6 +77,9 @@ def autocomplete_folder_view(request):
   ).values_list("data__id", flat=True)
 
   folders = Folders.objects.filter(id__in=folders_user_has_access_ids)
+
+  # Include 'General' Folder on autocomplete
+  folders = folders.union(Folders.objects.filter(id=1))
 
   response = [{'title': folder.title, 'id': folder.id} for folder in folders][:limit]
 

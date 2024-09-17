@@ -12,7 +12,7 @@ class Note(SoftDeleteModel, ShareableModel):
   content = models.TextField(blank=False, null=False)
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
-  tags = models.ManyToManyField(Tag, blank=True, null=True)
+  tags = models.ManyToManyField(Tag, blank=True)
   folder = models.ForeignKey(Folders, default=Folders.get_default_id, on_delete=models.PROTECT)
 
   def save(self, **kwargs):

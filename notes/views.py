@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django.core.exceptions import ValidationError, PermissionDenied
 from django.db.models.base import Model as Model
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
@@ -36,6 +37,21 @@ class UpdateNoteView(BaseContext, UpdateView):
   template_name = 'notes/form.html'
   success_url = reverse_lazy('notes-list')
   form_class = NoteForm
+  
+  def get_object(self, **kwargs):
+    obj = super().get_object(**kwargs)
+
+    permission = Permission.objects.filter(
+      user=self.request.user,
+      data__id=obj.id,
+      data__note__is_deleted=False,
+      data__type=DataType.NOTE,
+    ).exclude(type=PermissionType.READER).exists()
+
+    if not permission:
+      raise PermissionDenied("You cannot perform this action")
+
+    return obj
 
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
@@ -47,6 +63,22 @@ class DeleteNoteView(DeleteView):
   pk_url_kwarg = 'id'
   template_name = 'notes/confirm_delete.html'
   success_url = reverse_lazy('notes-list')
+
+  def get_object(self, **kwargs):
+    obj = super().get_object(**kwargs)
+
+    permission = Permission.objects.filter(
+      user=self.request.user,
+      data__id=obj.id,
+      data__note__is_deleted=False,
+      data__type=DataType.NOTE,
+      type=PermissionType.CREATOR,
+    ).exists()
+
+    if not permission:
+      raise PermissionDenied("You cannot perform this action")
+
+    return obj
 
 class DetailNoteView(BaseContext, DetailView):
   pk_url_kwarg = 'id'
@@ -87,7 +119,11 @@ class ListDeletedNoteView(FilterNoteBaseView):
 
 def restore_note_view(request, id):
   permission_exists = Permission.objects.filter(
-    user=request.user, data__type=DataType.NOTE, data__id=id
+    user=request.user,
+    data__type=DataType.NOTE,
+    data__note__is_deleted=True,
+    data__id=id,
+    type=PermissionType.CREATOR,
   ).exists()
   if permission_exists:
     note = Note.all_objects.filter(is_deleted=True).get(id=id)

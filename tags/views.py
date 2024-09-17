@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView
@@ -24,11 +25,27 @@ class UpdateTagView(UpdateView):
   form_class = TagForm
   success_url = reverse_lazy('notes-list')
 
+  def get_object(self, **kwargs):
+    obj = super().get_object(**kwargs)
+    
+    if not obj.created_by == self.request.user:
+      raise PermissionDenied("You cannot perform this action")
+
+    return obj
+
 class DeleteTagView(DeleteView):
   model = Tag
   pk_url_kwarg = 'id'
   template_name = 'tags/confirm_delete.html'
   success_url = reverse_lazy('notes-list')
+
+  def get_object(self, **kwargs):
+    obj = super().get_object(**kwargs)
+    
+    if not obj.created_by == self.request.user:
+      raise PermissionDenied("You cannot perform this action")
+
+    return obj
 
 def autocomplete_tag_view(request):
   search = request.GET.get('search')

@@ -15,7 +15,8 @@ class BaseContext(View):
     context = super().get_context_data(**kwargs)
     context["tags"] = Tag.objects.filter(created_by=self.request.user)
 
-    foders_user_has_access_ids = Permission.objects.filter(user=self.request.user, data__type=DataType.FOLDER).values_list("data__id", flat=True)
-
-    context["folders"] = Folders.objects.filter(id__in=foders_user_has_access_ids)
+    foders_user_has_access = Permission.objects.filter(
+      user=self.request.user, data__type=DataType.FOLDER
+    )
+    context["folders"] = foders_user_has_access
     return context
