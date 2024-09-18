@@ -7,7 +7,7 @@ from django.views.generic import CreateView, UpdateView, DetailView, DeleteView
 from core.views import BaseContext
 from notes.filters import FilterNoteBaseView
 from notes.models import Note, Like
-from notes.forms import NoteForm, FavoriteNoteForm
+from notes.forms import NoteForm, UpdateSharedNoteForm, FavoriteNoteForm
 from core.choices import DataType
 from tags.models import Tag
 from folders.models import Folders
@@ -36,7 +36,18 @@ class UpdateNoteView(BaseContext, UpdateView):
   pk_url_kwarg = 'id'
   template_name = 'notes/form.html'
   success_url = reverse_lazy('notes-list')
-  form_class = NoteForm
+
+  def get_form_class(self):
+    permission = Permission.objects.get(
+      user=self.request.user,
+      data__type=DataType.NOTE,
+      data=self.get_object(),
+    )
+
+    if permission.type != PermissionType.CREATOR:
+      return UpdateSharedNoteForm
+
+    return NoteForm
   
   def get_object(self, **kwargs):
     obj = super().get_object(**kwargs)
@@ -57,6 +68,11 @@ class UpdateNoteView(BaseContext, UpdateView):
     context = super().get_context_data(**kwargs)
     context["type"] = "Update"
     return context
+
+  def get_form_kwargs(self):
+    kwargs = super().get_form_kwargs()
+    kwargs["creator"] = self.request.user
+    return kwargs
 
 class DeleteNoteView(DeleteView):
   model = Note
@@ -189,6 +205,16 @@ class ListFolderNotesView(FilterNoteBaseView):
       self.title = folder.title
 
       return user_notes_permissions.filter(data__note__is_deleted=False, data__note__folder=folder)
+
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context["folder"] = Permission.objects.filter(
+      user=self.request.user,
+      data__type=DataType.FOLDER,
+      data__id=self.kwargs.get('id'),
+      type=PermissionType.CREATOR,
+    ).first()
+    return context
 
 class ListSharedNoteView(FilterNoteBaseView):
   template_name = 'notes/notes.html'

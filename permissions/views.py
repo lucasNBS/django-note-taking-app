@@ -1,6 +1,7 @@
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from core.views import BaseContext
+from core.choices import DataType
 
 from . import models, forms, choices
 
@@ -43,3 +44,17 @@ class RemoveNotePermissions(DeleteView):
 
   def get_success_url(self):
     return f'/permissions/list/{self.kwargs["note_id"]}'
+
+  def post(self, request, **kwargs):
+    if self.get_object().data.type == DataType.FOLDER:
+      notes = models.Permission.objects.filter(
+        user=self.get_object().user,
+        data__type=DataType.NOTE,
+        type=self.get_object().type,
+        data__note__folder=self.get_object().data
+      )
+
+      for note in notes:
+        note.delete()
+
+    return super().post(self, request, **kwargs)

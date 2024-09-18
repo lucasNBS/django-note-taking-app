@@ -20,10 +20,9 @@ class NoteForm(forms.ModelForm):
       'folder': widgets.Select(label="Folder")
     }
 
-  def __init__(self, creator=None, user=None, *args, **kwargs):
+  def __init__(self, creator=None, *args, **kwargs):
     super().__init__(*args, **kwargs)
     self.creator = creator
-    self.user = user
 
   def clean_folder(self):
     folder = self.cleaned_data['folder']
@@ -33,7 +32,7 @@ class NoteForm(forms.ModelForm):
       return folder
     
     permission = Permission.objects.filter(
-      data__id=folder.id, user=self.user
+      data__id=folder.id, user=self.creator
     ).exclude(type=PermissionType.READER).exists()
 
     if not permission:
@@ -43,7 +42,7 @@ class NoteForm(forms.ModelForm):
 
   def clean_tags(self):
     tags = self.cleaned_data['tags']
-    tags_user_has_not_access = tags.exclude(created_by=self.user)
+    tags_user_has_not_access = tags.exclude(created_by=self.creator)
 
     if len(tags_user_has_not_access) > 0:
       raise ValidationError("You do not have access to some of the selected Tags")
@@ -66,6 +65,50 @@ class NoteForm(forms.ModelForm):
     if self.creator is not None:
       self.instance.created_by = self.creator
     return super().save(*args, **kwargs)
+
+
+class UpdateSharedNoteForm(forms.ModelForm):
+  title = forms.CharField(widget=widgets.InputField(label="Title"))
+  description = forms.CharField(widget=widgets.InputField(label="Description"))
+  content = forms.CharField(widget=widgets.Textarea(label="Content"))
+
+  class Meta:
+    model = Note
+    fields = ['title', 'description', 'tags', 'content']
+    widgets = {
+      'tags': widgets.SelectMultiple(label="Tags"),
+    }
+
+  def __init__(self, creator=None, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self.creator = creator
+
+  def clean_tags(self):
+    tags = self.cleaned_data['tags']
+    tags_user_has_not_access = tags.exclude(created_by=self.creator)
+
+    if len(tags_user_has_not_access) > 0:
+      raise ValidationError("You do not have access to some of the selected Tags")
+
+    return tags
+
+  def clean_title(self):
+    title = self.cleaned_data["title"]
+    if len(title) > 50:
+      raise ValidationError("Max length is 50")
+    return title
+
+  def clean_description(self):
+    description = self.cleaned_data["description"]
+    if len(description) > 200:
+      raise ValidationError("Max length is 200")
+    return description
+  
+  def save(self, *args, **kwargs):
+    if self.creator is not None:
+      self.instance.created_by = self.creator
+    return super().save(*args, **kwargs)
+
 
 class FavoriteNoteForm(forms.ModelForm):
   
