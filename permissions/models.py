@@ -8,3 +8,15 @@ class Permission(models.Model):
   user = models.ForeignKey(User, on_delete=models.PROTECT)
   type = models.CharField(choices=PermissionType, blank=False, null=False)
   data = models.ForeignKey(ShareableModel, on_delete=models.PROTECT)
+
+  def save(self, **kwargs):
+    permission_already_exists = Permission.objects.filter(
+      user=self.user,
+      type=self.type,
+      data=self.data,
+    ).exists()
+
+    if permission_already_exists:
+      return None
+
+    return super().save(**kwargs)
