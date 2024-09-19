@@ -36,7 +36,14 @@ class PermissionCreateForm(forms.ModelForm):
       notes = Folders.objects.get(id=self.instance.data.id).note_set.all()
 
       for note in notes:
-        Permission.objects.create(data=note, user=self.instance.user, type=self.instance.type)
+        permission_exists = Permission.objects.filter(user=self.instance.user, data=note).exists()
+
+        if permission_exists:
+          Permission.objects.filter(data=note, user=self.instance.user).update(
+            type=constants.permissions_relation[self.instance.type]
+          )
+        else:
+          Permission.objects.create(data=note, user=self.instance.user, type=self.instance.type)
 
     return super().save(commit)
 
