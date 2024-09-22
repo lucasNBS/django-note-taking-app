@@ -8,9 +8,9 @@
         <span class="hover:underline">Voltar</span>
       </a>
     </div>
-    <form action="{% url 'notes-permissions-create' note_id %}" method="post" class="flex gap-2 justify-start items-center mt-6">
+    <form action="{% url 'notes-permissions-create' data_id %}" method="post" class="flex gap-2 justify-start items-center mt-6">
       {% csrf_token %}
-      <input type="hidden" name="data" id="id_data" value="{{ note_id }}">
+      <input type="hidden" name="data" id="id_data" value="{{ data_id }}">
       {{ form.user }}
       {{ form.type }}
       <button class="font-bold bg-gray-700 text-white py-2 px-4 rounded shrink-0">Create Permission</button>
@@ -30,13 +30,13 @@
             <td class="p-2 border-2 border-gray-300">{{ permission.type }}</td>
             <td class="p-2 border-2 border-gray-300">
               <div class="flex justify-center gap-4 mx-auto">
-                <form method="post" action="{% url 'notes-permissions-update' note_id=note_id id=permission.id %}">
+                <form method="post" action="{% url 'notes-permissions-update' data_id=data_id id=permission.id %}">
                   {% csrf_token %}
                   <input type="hidden" name="type" id="id_type" value="{{ permission.type }}">
                   <button>Change Permission</button>
                 </form>
                 <span
-                  data-url="{% url 'notes-permissions-remove' note_id=note_id id=permission.id %}"
+                  data-url="{% url 'notes-permissions-remove' data_id=data_id id=permission.id %}"
                   data-confirm-modal
                   data-modal-title="Confirm Delete"
                   data-modal-text="Do you really want to delete this item?"

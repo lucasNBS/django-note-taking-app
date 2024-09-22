@@ -1,9 +1,9 @@
 from django.urls import path
-from .views import ListNotePermissions, CreateNotePermissions, UpdateNotePermissions, RemoveNotePermissions
+from .views import ListPermissions, CreatePermissions, UpdatePermissions, RemovePermissions
 
 urlpatterns = [
-  path("list/<int:note_id>", ListNotePermissions.as_view(), name='notes-permissions-list'),
-  path("create/<int:note_id>", CreateNotePermissions.as_view(), name='notes-permissions-create'),
-  path("update/<int:note_id>/<int:id>", UpdateNotePermissions.as_view(), name='notes-permissions-update'),
-  path("remove/<int:note_id>/<int:id>", RemoveNotePermissions.as_view(), name='notes-permissions-remove'),
+  path("list/<int:data_id>", ListPermissions.as_view(), name='notes-permissions-list'),
+  path("create/<int:data_id>", CreatePermissions.as_view(), name='notes-permissions-create'),
+  path("update/<int:data_id>/<int:id>", UpdatePermissions.as_view(), name='notes-permissions-update'),
+  path("remove/<int:data_id>/<int:id>", RemovePermissions.as_view(), name='notes-permissions-remove'),
 ]
