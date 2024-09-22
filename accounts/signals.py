@@ -8,5 +8,5 @@ from folders.models import Folders
 def create_permission(sender, instance, created, **kwargs):
   if created:
     models.Permission.objects.create(
-      user=instance, type=choices.PermissionType.READER, data=Folders.objects.get(pk=1)
+      user=instance, type=choices.PermissionType.READER, data=Folders.get_default_id()
     )

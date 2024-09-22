@@ -1,6 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from core.widgets import InputField
+from permissions import choices, models
 from .models import Folders
 
 class FolderForm(forms.ModelForm):
@@ -21,6 +22,15 @@ class FolderForm(forms.ModelForm):
     return title
   
   def save(self, *args, **kwargs):
-    if self.creator is not None:
-      self.instance.created_by = self.creator
-    return super().save(*args, **kwargs)
+    save = super().save(*args, **kwargs)
+
+    permission_already_exists = models.Permission.objects.filter(
+      type=choices.PermissionType.CREATOR, data=self.instance
+    ).exists()
+
+    if not permission_already_exists:
+      models.Permission.objects.create(
+        user=self.creator, type=choices.PermissionType.CREATOR, data=self.instance
+      )
+
+    return save

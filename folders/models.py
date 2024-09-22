@@ -9,7 +9,7 @@ class Folders(ShareableModel):
     folder, _ = cls.objects.get_or_create(
       title="General"
     )
-    return folder.id
+    return folder
   
   def save(self, **kwargs):
     self.type = DataType.FOLDER
