@@ -1,3 +1,4 @@
+import re
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
@@ -9,6 +10,11 @@ from permissions.models import Permission
 from permissions.choices import PermissionType
 
 from core.choices import DataType
+
+def include_general_folder_in_queryset(folders):
+  general_folder = Folders.objects.filter(title="General").first()
+  folders = folders.union(Folders.objects.filter(id=general_folder.id))
+  return folders
 
 # Create your views here.
 class CreateFolder(CreateView):
@@ -57,10 +63,12 @@ class DeleteFolder(DeleteView):
       data__id=obj.id,
       data__type=DataType.FOLDER,
       type=PermissionType.CREATOR,
-    ).exists()
+    )
 
-    if not permission:
+    if not permission.exists():
       raise PermissionDenied("You cannot perform this action")
+
+    permission.first().delete()
 
     return obj
 
@@ -78,8 +86,8 @@ def autocomplete_folder_view(request):
 
   folders = Folders.objects.filter(id__in=folders_user_has_access_ids)
 
-  # Include 'General' Folder on autocomplete
-  folders = folders.union(Folders.objects.filter(id=1))
+  if re.match(search, "General", re.I):
+    folders = include_general_folder_in_queryset(folders)
 
   response = [{'title': folder.title, 'id': folder.id} for folder in folders][:limit]
 

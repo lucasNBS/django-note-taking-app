@@ -1,16 +1,6 @@
 from django.contrib import auth
 from django.test import TestCase, RequestFactory, Client
-from . import models, views
-
-def create_user():
-  user = models.User.objects.create(
-      username='user',
-      email='user@email.com'
-    )
-  user.set_password('password')
-  user.save()
-
-  return user
+from . import models, views, utils
 
 # Create your tests here.
 class AuthenticationTestCase(TestCase):
@@ -32,7 +22,7 @@ class AuthenticationTestCase(TestCase):
     self.assertTrue(user_exists)
 
   def test_login(self):
-    user = create_user()
+    user = utils.create_default_user()
 
     login_data = {'username': 'user@email.com', 'password': 'password'}
     self.client.post("/accounts/login/", login_data)
@@ -41,7 +31,7 @@ class AuthenticationTestCase(TestCase):
     self.assertEqual(user.id, client_user.id)
 
   def test_logout(self):
-    user = create_user()
+    user = utils.create_default_user()
 
     login_data = {'username': 'user@email.com', 'password': 'password'}
     self.client.post("/accounts/login/", login_data)
