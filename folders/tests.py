@@ -19,13 +19,13 @@ class FoldersOperationsTestCase(TestCase):
     Permission.objects.create(data=self.folder, user=self.client_user, type=PermissionType.CREATOR)
 
   def test_create_folder(self):
-    folder_data = {'title': 'Folder 1'}
+    folder_data = {'title': 'Folder 2'}
 
     request = RequestFactory().post("/", folder_data)
     request.user = self.client_user
 
     views.CreateFolder.as_view()(request)
-    folder_exists = models.Folders.objects.filter(title="Folder 1").exists()
+    folder_exists = models.Folders.objects.filter(title="Folder 2").exists()
     self.assertTrue(folder_exists)
 
   def test_update_folder(self):
