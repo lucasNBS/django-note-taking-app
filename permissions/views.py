@@ -8,23 +8,19 @@ from core.choices import DataType
 
 from . import models, forms, choices
 
-class AuthorCanEditPermissions:
+def verify_user_permission(self):
+  id = self.kwargs["data_id"]
 
-  def post(self, request, **kwargs):
-    id = self.kwargs["data_id"]
+  permission_exists = models.Permission.objects.filter(
+    user=self.request.user,
+    data__id=id,
+    type=choices.PermissionType.CREATOR,
+  ).filter(
+    Q(data__type=DataType.NOTE, data__note__is_deleted=False) | Q(data__type=DataType.FOLDER)
+  ).exists()
 
-    permission = models.Permission.objects.filter(
-      user=self.request.user,
-      data__id=id,
-      type=choices.PermissionType.CREATOR,
-    ).filter(
-      Q(data__type=DataType.NOTE, data__note__is_deleted=False) | Q(data__type=DataType.FOLDER)
-    ).exists()
-
-    if not permission:
-      raise PermissionDenied("You cannot perform this action")
-
-    return super().post(request, **kwargs)
+  if not permission_exists:
+    raise PermissionDenied("You cannot perform this action")
 
 class ListPermissions(BaseContext, ListView):
   model = models.Permission
@@ -32,19 +28,7 @@ class ListPermissions(BaseContext, ListView):
   paginate_by = 20
 
   def get(self, request, **kwargs):
-    id = self.kwargs["data_id"]
-
-    permission = models.Permission.objects.filter(
-      user=self.request.user,
-      data__id=id,
-      type=choices.PermissionType.CREATOR,
-    ).filter(
-      Q(data__type=DataType.NOTE, data__note__is_deleted=False) | Q(data__type=DataType.FOLDER)
-    ).exists()
-
-    if not permission:
-      raise PermissionDenied("You cannot perform this action")
-
+    verify_user_permission(self)
     return super().get(request, **kwargs)
 
   def get_queryset(self):
@@ -57,15 +41,19 @@ class ListPermissions(BaseContext, ListView):
     context["form"] = forms.PermissionCreateForm()
     return context
 
-class CreatePermissions(CreateView, AuthorCanEditPermissions):
+class CreatePermissions(CreateView):
   model = models.Permission
   template_name = 'permissions/form.html'
   form_class = forms.PermissionCreateForm
 
   def get_success_url(self):
     return f'/permissions/list/{self.kwargs["data_id"]}'
+
+  def form_valid(self, form):
+    verify_user_permission(self)
+    return super().form_valid(form)
   
-class UpdatePermissions(UpdateView, AuthorCanEditPermissions):
+class UpdatePermissions(UpdateView):
   model = models.Permission
   template_name = 'permissions/form.html'
   pk_url_kwarg = 'id'
@@ -74,7 +62,11 @@ class UpdatePermissions(UpdateView, AuthorCanEditPermissions):
   def get_success_url(self):
     return f'/permissions/list/{self.kwargs["data_id"]}'
 
-class RemovePermissions(DeleteView, AuthorCanEditPermissions):
+  def form_valid(self, form):
+    verify_user_permission(self)
+    return super().form_valid(form)
+
+class DeletePermissions(DeleteView):
   model = models.Permission
   template_name = 'permissions/form.html'
   pk_url_kwarg = 'id'
@@ -96,6 +88,7 @@ class RemovePermissions(DeleteView, AuthorCanEditPermissions):
   def post(self, request, **kwargs):
     obj = self.get_object()
 
+    verify_user_permission(self)
     post = super().post(self, request, **kwargs)
 
     if obj.data.type == DataType.FOLDER:
