@@ -60,10 +60,59 @@ class NoteForm(forms.ModelForm):
     if len(description) > 200:
       raise ValidationError("Max length is 200")
     return description
-  
+
+  def _handle_alter_permission_from_previous_folder(
+    self, previous_note_instance, previous_folder_permissions
+  ):
+    for folder_permission in previous_folder_permissions:
+      note_previous_permission = Permission.objects.filter(
+        data=previous_note_instance, type=folder_permission.type, user=folder_permission.user
+      ).first()
+      if note_previous_permission:
+        note_previous_permission.delete()
+
+  def _handle_alter_permission_from_new_folder(
+    self, new_note_instance, new_folder_permissions
+  ):
+    for folder_permission in new_folder_permissions:
+      permission = Permission.objects.filter(
+        data=new_note_instance, type=folder_permission.type, user=folder_permission.user
+      ).first()
+      if not permission:
+        Permission.objects.create(
+          data=new_note_instance, type=folder_permission.type, user=folder_permission.user
+        )
+
+  def _handle_alter_permission_when_folder_change(self, previous_note_instance, new_note_instance):
+    previous_folder_permissions = Permission.objects.filter(
+      data=previous_note_instance.folder
+    ).exclude(type=PermissionType.CREATOR)
+
+    if previous_folder_permissions and previous_note_instance.folder.title != "General":
+      self._handle_alter_permission_from_previous_folder(
+        previous_note_instance, previous_folder_permissions
+      )
+
+    new_folder_permissions = Permission.objects.filter(
+      data=new_note_instance.folder
+    ).exclude(type=PermissionType.CREATOR)
+    
+    if new_folder_permissions and new_note_instance.folder.title != "General":
+      self._handle_alter_permission_from_new_folder(
+        new_note_instance, new_folder_permissions
+      )
+
   def save(self, *args, **kwargs):
-    if self.creator is not None:
-      self.instance.created_by = self.creator
+    if self.instance.id:
+      previous_note_instance = Note.objects.get(id=self.instance.id)
+      if self.instance.folder != previous_note_instance.folder:
+        self._handle_alter_permission_when_folder_change(previous_note_instance, self.instance)
+
+    if self.creator is not None and self.instance.id is None:
+      Permission.objects.create(
+        user=self.creator, type=choices.PermissionType.CREATOR, data=self.instance
+      )
+
     return super().save(*args, **kwargs)
 
 
