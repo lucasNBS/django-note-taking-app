@@ -24,8 +24,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          {% for permission in page_obj %}
+        {% for permission in page_obj %}
+          <tr>
             <td class="p-2 border-2 border-gray-300">{{ permission.user }}</td>
             <td class="p-2 border-2 border-gray-300">{{ permission.type }}</td>
             <td class="p-2 border-2 border-gray-300">
@@ -46,8 +46,8 @@
                 </span>
               </div>
             </td>
-          {% endfor %}
-        </tr>
+          </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>

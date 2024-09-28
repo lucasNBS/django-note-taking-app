@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="{% static 'css/output.css' %}" />
+  <title>Notes - 403</title>
+</head>
+<body class="w-full min-h-screen font-sans bg-gray-200 flex justify-center items-center flex-col">
+  <h1 class="text-4xl font-bold uppercase">Permission Denied</h1>
+  <p class="mt-2">{{ exception }}</p>
+  <a
+    class="mt-8 font-bold bg-gray-600 text-white py-2 px-4 rounded shrink-0 hover:bg-gray-700 transition-colors"
+    href="{% url 'notes-list' %}"
+  >
+    Go Back
+  </a>
+</body>
+</html>
