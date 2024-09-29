@@ -1,7 +1,6 @@
 from django.shortcuts import redirect
 from tags.models import Tag
 from folders.models import Folders
-# from accounts.filters import CreatedByUserFilter
 from django.views.generic import View
 from permissions.models import Permission
 from .choices import DataType

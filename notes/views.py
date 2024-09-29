@@ -8,7 +8,6 @@ from core.views import BaseContext
 from notes.filters import FilterNoteBaseView
 from notes.models import Note, Like
 from notes.forms import NoteForm, UpdateSharedNoteForm, FavoriteNoteForm
-from core.choices import DataType
 from tags.models import Tag
 from folders.models import Folders
 from permissions.models import Permission
@@ -101,12 +100,17 @@ class DetailNoteView(BaseContext, DetailView):
   template_name = 'notes/note.html'
 
   def get_object(self):
-    return Permission.objects.get(
+    permission = Permission.objects.filter(
       user=self.request.user,
       data__type=DataType.NOTE,
       data__note__is_deleted=False,
       data__id=self.kwargs.get('id')
-    )
+    ).first()
+
+    if not permission:
+      raise PermissionDenied("You do not have permission to access this note")
+
+    return permission
 
 class ListNoteView(FilterNoteBaseView):
   template_name = 'notes/notes.html'
@@ -205,6 +209,7 @@ class ListFolderNotesView(FilterNoteBaseView):
       self.title = folder.title
 
       return user_notes_permissions.filter(data__note__is_deleted=False, data__note__folder=folder)
+    raise PermissionDenied("You do not have permission to access this folder")
 
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)

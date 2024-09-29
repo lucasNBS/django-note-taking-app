@@ -28,7 +28,7 @@ class NoteForm(forms.ModelForm):
     folder = self.cleaned_data['folder']
 
     # Allow user to create notes in 'General' Folder
-    if folder.id == 1:
+    if folder.id == Folders.objects.filter(title="General").first().id:
       return folder
     
     permission = Permission.objects.filter(
@@ -103,18 +103,21 @@ class NoteForm(forms.ModelForm):
       )
 
   def save(self, *args, **kwargs):
-    if self.instance.id:
+    created = True if self.instance.id else False
+
+    if created:
       previous_note_instance = Note.objects.get(id=self.instance.id)
       if self.instance.folder != previous_note_instance.folder:
         self._handle_alter_permission_when_folder_change(previous_note_instance, self.instance)
 
-    if self.creator is not None and self.instance.id is None:
+    save = super().save(*args, **kwargs)
+
+    if self.creator is not None and not created:
       Permission.objects.create(
-        user=self.creator, type=choices.PermissionType.CREATOR, data=self.instance
+        user=self.creator, type=PermissionType.CREATOR, data=self.instance
       )
 
-    return super().save(*args, **kwargs)
-
+    return save
 
 class UpdateSharedNoteForm(forms.ModelForm):
   title = forms.CharField(widget=widgets.InputField(label="Title"))

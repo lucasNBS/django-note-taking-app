@@ -80,4 +80,3 @@ class TagsAutocompleteTestCase(TestCase):
     response = views.autocomplete_tag_view(request)
 
     self.assertJSONEqual(response.content, [])
-
