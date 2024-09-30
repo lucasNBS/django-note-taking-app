@@ -120,18 +120,34 @@ class NotesValidationTestCase(TestCase):
       content="Note 1 content",
       folder=Folders.objects.get(title="General"),
     )
-    self.note_permission = Permission.objects.create(
-      data=self.note, user=self.client_user, type=PermissionType.CREATOR
-    )
 
   def setUp(self):
     utils.log_in_default_user(self.client)
 
-  def test_user_with_permission_should_list_note_in_folder(self):
+  def test_editor_user_should_list_note_in_folder(self):
     folder = Folders.objects.create(title="Folder 1")
-    Permission.objects.create(data=folder, user=self.client_user, type=PermissionType.CREATOR)
     self.note.folder = folder
     self.note.save()
+
+    Permission.objects.create(data=folder, user=self.client_user, type=PermissionType.EDITOR)
+    Permission.objects.create(data=self.note, user=self.client_user, type=PermissionType.EDITOR)
+
+    kwargs = {'id': folder.id}
+    url = reverse('notes-list-folder', kwargs=kwargs)
+    response = self.client.get(url)    
+    self.assertContains(
+      response,
+      f'<h2 class="font-bold text-xl max-h-20 capitalize cursor-pointer overflow-hidden w-fit transition-transform hover:scale-110">{self.note.title}</h2>',
+      html="True",
+    )
+
+  def test_reader_user_should_list_note_in_folder(self):
+    folder = Folders.objects.create(title="Folder 1")
+    self.note.folder = folder
+    self.note.save()
+
+    Permission.objects.create(data=folder, user=self.client_user, type=PermissionType.READER)
+    Permission.objects.create(data=self.note, user=self.client_user, type=PermissionType.READER)
 
     kwargs = {'id': folder.id}
     url = reverse('notes-list-folder', kwargs=kwargs)
@@ -152,7 +168,21 @@ class NotesValidationTestCase(TestCase):
     response = self.client.get(url)
     self.assertEquals(response.status_code, 403)
 
-  def test_user_with_permission_should_detail_note(self):
+  def test_editor_user_should_detail_note(self):
+    Permission.objects.create(data=self.note, user=self.client_user, type=PermissionType.EDITOR)
+
+    kwargs = {'id': self.note.id}
+    url = reverse('notes-detail', kwargs=kwargs)
+    response = self.client.get(url)    
+    self.assertContains(
+      response,
+      f'<h1 class="text-3xl capitalize font-bold">{self.note.title}</h1>',
+      html="True",
+    )
+
+  def test_reader_user_should_detail_note(self):
+    Permission.objects.create(data=self.note, user=self.client_user, type=PermissionType.READER)
+
     kwargs = {'id': self.note.id}
     url = reverse('notes-detail', kwargs=kwargs)
     response = self.client.get(url)    
@@ -163,16 +193,14 @@ class NotesValidationTestCase(TestCase):
     )
 
   def test_user_without_permission_should_not_detail_note(self):
-    self.note_permission.delete()
-
     kwargs = {'id': self.note.id}
     url = reverse('notes-detail', kwargs=kwargs)
     response = self.client.get(url)
     self.assertEquals(response.status_code, 403)
 
-  def test_user_with_permission_should_create_note_in_folder(self):
+  def test_editor_user_should_create_note_in_folder(self):
     folder = Folders.objects.create(title="Folder 1")
-    Permission.objects.create(data=folder, user=self.client_user, type=PermissionType.CREATOR)
+    Permission.objects.create(data=folder, user=self.client_user, type=PermissionType.EDITOR)
 
     note_data = {
       'title': 'Note 2',
@@ -186,6 +214,23 @@ class NotesValidationTestCase(TestCase):
     note_exists = models.Note.objects.filter(title="Note 2").exists()
     
     self.assertTrue(note_exists)
+
+  def test_reader_user_should_not_create_note_in_folder(self):
+    folder = Folders.objects.create(title="Folder 1")
+    Permission.objects.create(data=folder, user=self.client_user, type=PermissionType.READER)
+
+    note_data = {
+      'title': 'Note 2',
+      'description': 'Note 2 description',
+      'content': 'Note 2 content',
+      'folder': folder.id,
+    }
+
+    url = reverse('notes-create')
+    response = self.client.post(url, note_data)
+    note_exists = models.Note.objects.filter(title="Note 2").exists()
+    
+    self.assertFalse(note_exists)
 
   def test_user_without_permission_should_not_create_note_in_folder(self):
     folder = Folders.objects.create(title="Folder 1")
@@ -202,15 +247,14 @@ class NotesValidationTestCase(TestCase):
 
     self.assertFalse(note_exists)
 
-  def test_user_with_permission_should_update_note_in_folder(self):
-    folder = Folders.objects.create(title="Folder 1")
-    Permission.objects.create(data=folder, user=self.client_user, type=PermissionType.CREATOR)
+  def test_editor_user_should_update_note(self):
+    Permission.objects.create(data=self.note, user=self.client_user, type=PermissionType.EDITOR)
 
     note_new_data = {
       'title': 'Note 1 New Title',
       'description': 'Note 1 description',
       'content': 'Note 1 content',
-      'folder': folder.id,
+      'folder': Folders.objects.get(title="General").id,
     }
 
     kwargs = {'id': self.note.id}
@@ -219,13 +263,14 @@ class NotesValidationTestCase(TestCase):
     note_exists = models.Note.objects.filter(title="Note 1 New Title").exists()
     self.assertTrue(note_exists)
 
-  def test_user_without_permission_should_not_update_note_in_folder(self):
-    folder = Folders.objects.create(title="Folder 1")
+  def test_reader_user_should_not_update_note(self):
+    Permission.objects.create(data=self.note, user=self.client_user, type=PermissionType.READER)
+
     note_new_data = {
       'title': 'Note 1 New Title',
       'description': 'Note 1 description',
       'content': 'Note 1 content',
-      'folder': folder.id,
+      'folder': Folders.objects.get(title="General").id,
     }
 
     kwargs = {'id': self.note.id}
@@ -234,15 +279,22 @@ class NotesValidationTestCase(TestCase):
     note_exists = models.Note.objects.filter(title="Note 1 New Title").exists()
     self.assertFalse(note_exists)
 
-  def test_user_with_permission_should_delete_note(self):
-    kwargs = {'id': self.note.id}
-    url = reverse('notes-delete', kwargs=kwargs)
-    response = self.client.post(url)
-    note_still_exists = models.Note.objects.filter(title="Note 1").exists()
-    self.assertFalse(note_still_exists)
+  def test_user_without_permission_should_not_update_note(self):
+    note_new_data = {
+      'title': 'Note 1 New Title',
+      'description': 'Note 1 description',
+      'content': 'Note 1 content',
+      'folder': Folders.objects.get(title="General").id,
+    }
 
-  def test_user_without_permission_should_not_delete_note(self):
-    self.note_permission.delete()
+    kwargs = {'id': self.note.id}
+    url = reverse('notes-update', kwargs=kwargs)
+    response = self.client.post(url, note_new_data)
+    note_exists = models.Note.objects.filter(title="Note 1 New Title").exists()
+    self.assertFalse(note_exists)
+
+  def test_editor_user_should_not_delete_note(self):
+    Permission.objects.create(data=self.note, user=self.client_user, type=PermissionType.EDITOR)
 
     kwargs = {'id': self.note.id}
     url = reverse('notes-delete', kwargs=kwargs)
@@ -250,18 +302,44 @@ class NotesValidationTestCase(TestCase):
     note_still_exists = models.Note.objects.filter(title="Note 1").exists()
     self.assertTrue(note_still_exists)
 
-  def test_user_with_permission_should_restore_note(self):
+  def test_reader_user_should_not_delete_note(self):
+    Permission.objects.create(data=self.note, user=self.client_user, type=PermissionType.READER)
+
+    kwargs = {'id': self.note.id}
+    url = reverse('notes-delete', kwargs=kwargs)
+    response = self.client.post(url)
+    note_still_exists = models.Note.objects.filter(title="Note 1").exists()
+    self.assertTrue(note_still_exists)
+
+  def test_user_without_permission_should_not_delete_note(self):
+    kwargs = {'id': self.note.id}
+    url = reverse('notes-delete', kwargs=kwargs)
+    response = self.client.post(url)
+    note_still_exists = models.Note.objects.filter(title="Note 1").exists()
+    self.assertTrue(note_still_exists)
+
+  def test_editor_user_should_not_restore_note(self):
+    Permission.objects.create(data=self.note, user=self.client_user, type=PermissionType.EDITOR)
     self.note.delete()
     
     kwargs = {'id': self.note.id}
     url = reverse('notes-restore', kwargs=kwargs)
     response = self.client.post(url)
     note_was_restored = models.Note.objects.filter(title="Note 1").exists()
-    self.assertTrue(note_was_restored)
+    self.assertFalse(note_was_restored)
+
+  def test_reader_user_should_not_restore_note(self):
+    Permission.objects.create(data=self.note, user=self.client_user, type=PermissionType.READER)
+    self.note.delete()
+    
+    kwargs = {'id': self.note.id}
+    url = reverse('notes-restore', kwargs=kwargs)
+    response = self.client.post(url)
+    note_was_restored = models.Note.objects.filter(title="Note 1").exists()
+    self.assertFalse(note_was_restored)
 
   def test_user_without_permission_should_not_restore_note(self):
     self.note.delete()
-    self.note_permission.delete()
 
     kwargs = {'id': self.note.id}
     url = reverse('notes-restore', kwargs=kwargs)

@@ -28,7 +28,7 @@ class FolderForm(forms.ModelForm):
       type=choices.PermissionType.CREATOR, data=self.instance
     ).exists()
 
-    if not permission_already_exists:
+    if not permission_already_exists and not self.instance.id:
       models.Permission.objects.create(
         user=self.creator, type=choices.PermissionType.CREATOR, data=self.instance
       )

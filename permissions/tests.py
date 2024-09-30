@@ -273,27 +273,35 @@ class PermissionsValidationTestCase(TestCase):
     self.client = Client()
     self.user = utils.create_default_user()
     self.folder = Folders.objects.create(title="Folder 1")
-    self.permission = models.Permission.objects.create(
-      data=self.folder, user=self.user, type=choices.PermissionType.EDITOR
-    )
 
     self.user_to_share_data_with = utils.create_user(
       username='teste',
       email='teste@email.com',
       password='teste',
     )
+    self.user_to_share_data_with_permission = models.Permission.objects.create(
+      data=self.folder, user=self.user_to_share_data_with, type=choices.PermissionType.EDITOR
+    )
 
   def setUp(self):
     utils.log_in_default_user(self.client)
 
-  def test_non_authorized_user_should_not_list_permissions(self):
+  def test_editor_user_should_not_list_permissions(self):
+    models.Permission.objects.create(
+      data=self.folder, user=self.user, type=choices.PermissionType.EDITOR
+    )
+
     kwargs = {'data_id': self.folder.id}
     url = reverse('notes-permissions-list', kwargs=kwargs)
     response = self.client.get(url)
 
     self.assertEqual(response.status_code, 403)
 
-  def test_non_authorized_user_should_not_create_permissions(self):
+  def test_editor_user_should_not_create_permissions(self):
+    models.Permission.objects.create(
+      data=self.folder, user=self.user, type=choices.PermissionType.EDITOR
+    )
+
     share_data = {
       'user': self.user_to_share_data_with,
       'type': choices.PermissionType.READER,
@@ -313,39 +321,189 @@ class PermissionsValidationTestCase(TestCase):
     self.assertFalse(permission_exists)
     self.assertEqual(response.status_code, 403)
 
-  def test_non_authorized_user_should_not_update_permissions(self):
+  def test_editor_user_should_not_update_permissions(self):
+    models.Permission.objects.create(
+      data=self.folder, user=self.user, type=choices.PermissionType.EDITOR
+    )
+
     share_data = {
-      'type': self.permission.type
+      'type': self.user_to_share_data_with_permission.type
     }
 
     kwargs = {
       'data_id': self.folder.id,
-      'id': self.permission.id
+      'id': self.user_to_share_data_with_permission.id
     }
     url = reverse('notes-permissions-update', kwargs=kwargs)
     response = self.client.post(url, share_data)
 
     permission_exists = models.Permission.objects.filter(
       user=self.user,
-      type=constants.permissions_relation[self.permission.type],
+      type=constants.permissions_relation[self.user_to_share_data_with_permission.type],
       data=self.folder,
     ).exists()
 
     self.assertFalse(permission_exists)
     self.assertEqual(response.status_code, 403)
 
-  def test_non_authorized_user_should_not_delete_permissions(self):
+  def test_editor_user_should_not_delete_permissions(self):
+    models.Permission.objects.create(
+      data=self.folder, user=self.user, type=choices.PermissionType.EDITOR
+    )
+
     kwargs = {
       'data_id': self.folder.id,
-      'id': self.permission.id
+      'id': self.user_to_share_data_with_permission.id
     }
     url = reverse('notes-permissions-remove', kwargs=kwargs)
     response = self.client.post(url)
 
     permission_exists = models.Permission.objects.filter(
-      user=self.permission.user,
-      type=self.permission.type,
-      data=self.permission.data,
+      user=self.user_to_share_data_with_permission.user,
+      type=self.user_to_share_data_with_permission.type,
+      data=self.user_to_share_data_with_permission.data,
+    ).exists()
+
+    self.assertTrue(permission_exists)
+    self.assertEqual(response.status_code, 403)
+
+  def test_reader_user_should_not_list_permissions(self):
+    models.Permission.objects.create(
+      data=self.folder, user=self.user, type=choices.PermissionType.READER
+    )
+
+    kwargs = {'data_id': self.folder.id}
+    url = reverse('notes-permissions-list', kwargs=kwargs)
+    response = self.client.get(url)
+
+    self.assertEqual(response.status_code, 403)
+
+  def test_reader_user_should_not_create_permissions(self):
+    models.Permission.objects.create(
+      data=self.folder, user=self.user, type=choices.PermissionType.READER
+    )
+
+    share_data = {
+      'user': self.user_to_share_data_with,
+      'type': choices.PermissionType.READER,
+      'data': self.folder.id,
+    }
+
+    kwargs = {'data_id': self.folder.id}
+    url = reverse('notes-permissions-create', kwargs=kwargs)
+    response = self.client.post(url, share_data)
+
+    permission_exists = models.Permission.objects.filter(
+      user=self.user_to_share_data_with,
+      type=choices.PermissionType.READER,
+      data=self.folder.id,
+    ).exists()
+
+    self.assertFalse(permission_exists)
+    self.assertEqual(response.status_code, 403)
+
+  def test_reader_user_should_not_update_permissions(self):
+    models.Permission.objects.create(
+      data=self.folder, user=self.user, type=choices.PermissionType.READER
+    )
+
+    share_data = {
+      'type': self.user_to_share_data_with_permission.type
+    }
+
+    kwargs = {
+      'data_id': self.folder.id,
+      'id': self.user_to_share_data_with_permission.id
+    }
+    url = reverse('notes-permissions-update', kwargs=kwargs)
+    response = self.client.post(url, share_data)
+
+    permission = models.Permission.objects.get(id=self.user_to_share_data_with_permission.id)
+
+    self.assertTrue(permission.type == self.user_to_share_data_with_permission.type)
+    self.assertEqual(response.status_code, 403)
+
+  def test_reader_user_should_not_delete_permissions(self):
+    models.Permission.objects.create(
+      data=self.folder, user=self.user, type=choices.PermissionType.READER
+    )
+
+    kwargs = {
+      'data_id': self.folder.id,
+      'id': self.user_to_share_data_with_permission.id
+    }
+    url = reverse('notes-permissions-remove', kwargs=kwargs)
+    response = self.client.post(url)
+
+    permission_exists = models.Permission.objects.filter(
+      user=self.user_to_share_data_with_permission.user,
+      type=self.user_to_share_data_with_permission.type,
+      data=self.user_to_share_data_with_permission.data,
+    ).exists()
+
+    self.assertTrue(permission_exists)
+    self.assertEqual(response.status_code, 403)
+
+  def test_user_without_permission_should_not_list_permissions(self):
+    kwargs = {'data_id': self.folder.id}
+    url = reverse('notes-permissions-list', kwargs=kwargs)
+    response = self.client.get(url)
+
+    self.assertEqual(response.status_code, 403)
+
+  def test_user_without_permission_should_not_create_permissions(self):
+    share_data = {
+      'user': self.user_to_share_data_with,
+      'type': choices.PermissionType.READER,
+      'data': self.folder.id,
+    }
+
+    kwargs = {'data_id': self.folder.id}
+    url = reverse('notes-permissions-create', kwargs=kwargs)
+    response = self.client.post(url, share_data)
+
+    permission_exists = models.Permission.objects.filter(
+      user=self.user_to_share_data_with,
+      type=choices.PermissionType.READER,
+      data=self.folder.id,
+    ).exists()
+
+    self.assertFalse(permission_exists)
+    self.assertEqual(response.status_code, 403)
+
+  def test_user_without_permission_should_not_update_permissions(self):
+    share_data = {
+      'type': self.user_to_share_data_with_permission.type
+    }
+
+    kwargs = {
+      'data_id': self.folder.id,
+      'id': self.user_to_share_data_with_permission.id
+    }
+    url = reverse('notes-permissions-update', kwargs=kwargs)
+    response = self.client.post(url, share_data)
+
+    permission_exists = models.Permission.objects.filter(
+      user=self.user,
+      type=constants.permissions_relation[self.user_to_share_data_with_permission.type],
+      data=self.folder,
+    ).exists()
+
+    self.assertFalse(permission_exists)
+    self.assertEqual(response.status_code, 403)
+
+  def test_user_without_permission_should_not_delete_permissions(self):
+    kwargs = {
+      'data_id': self.folder.id,
+      'id': self.user_to_share_data_with_permission.id
+    }
+    url = reverse('notes-permissions-remove', kwargs=kwargs)
+    response = self.client.post(url)
+
+    permission_exists = models.Permission.objects.filter(
+      user=self.user_to_share_data_with_permission.user,
+      type=self.user_to_share_data_with_permission.type,
+      data=self.user_to_share_data_with_permission.data,
     ).exists()
 
     self.assertTrue(permission_exists)

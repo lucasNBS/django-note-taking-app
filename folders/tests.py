@@ -59,6 +59,56 @@ class FoldersValidationTestCase(TestCase):
   def setUp(self):
     utils.log_in_default_user(self.client)
 
+  def test_editor_should_update_folder(self):
+    Permission.objects.create(data=self.folder, user=self.client_user, type=PermissionType.EDITOR)
+
+    folder_new_data = {'title': 'Folder 1 New Title'}
+
+    kwargs = {'id': self.folder.id}
+    url = reverse('folders-update', kwargs=kwargs)
+    response = self.client.post(url, folder_new_data)
+
+    updated_folder_exists = models.Folders.objects.filter(title="Folder 1 New Title").exists()
+    self.assertTrue(updated_folder_exists)
+
+  def test_editor_should_not_delete_folder(self):
+    Permission.objects.create(data=self.folder, user=self.client_user, type=PermissionType.EDITOR)
+
+    kwargs = {'id': self.folder.id}
+    url = reverse('folders-delete', kwargs=kwargs)
+    response = self.client.post(url)
+
+    deleted_folder_still_exists = models.Folders.objects.filter(title="Folder 1").exists()
+    
+    self.assertTrue(deleted_folder_still_exists)
+    self.assertEqual(response.status_code, 403)
+
+  def test_reader_should_not_update_folder(self):
+    Permission.objects.create(data=self.folder, user=self.client_user, type=PermissionType.READER)
+
+    folder_new_data = {'title': 'Folder 1 New Title'}
+
+    kwargs = {'id': self.folder.id}
+    url = reverse('folders-update', kwargs=kwargs)
+    response = self.client.post(url, folder_new_data)
+
+    updated_folder_exists = models.Folders.objects.filter(title="Folder 1 New Title").exists()
+    
+    self.assertFalse(updated_folder_exists)
+    self.assertEqual(response.status_code, 403)
+
+  def test_reader_should_not_delete_folder(self):
+    Permission.objects.create(data=self.folder, user=self.client_user, type=PermissionType.READER)
+
+    kwargs = {'id': self.folder.id}
+    url = reverse('folders-delete', kwargs=kwargs)
+    response = self.client.post(url)
+
+    deleted_folder_still_exists = models.Folders.objects.filter(title="Folder 1").exists()
+    
+    self.assertTrue(deleted_folder_still_exists)
+    self.assertEqual(response.status_code, 403)
+
   def test_user_without_permission_should_not_update_folder(self):
     folder_new_data = {'title': 'Folder 1 New Title'}
 
