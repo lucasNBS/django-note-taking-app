@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'folders',
     'accounts',
     'permissions',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

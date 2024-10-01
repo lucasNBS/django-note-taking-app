@@ -1,4 +1,5 @@
 from django.shortcuts import redirect
+import re
 
 SHOULD_NOT_BE_LOGGED_IN = ['/accounts/login/', '/accounts/register/', '/admin/login/']
 
@@ -7,7 +8,9 @@ class LoginRequiredMiddleware:
     self.get_response = get_response
 
   def __call__(self, request):
-    if not request.user.is_authenticated and request.path not in SHOULD_NOT_BE_LOGGED_IN:
+    if re.match(".*/api/.*",request.path):
+      pass
+    elif not request.user.is_authenticated and request.path not in SHOULD_NOT_BE_LOGGED_IN:
       return redirect("accounts-login")    
     
     response = self.get_response(request)
