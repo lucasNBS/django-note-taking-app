@@ -5,6 +5,8 @@ import jwt, datetime
 from .serializers import UserSerializer
 from ..models import User
 
+FIFTEEN_MINUTES_IN_SECONDS = 15 * 60
+
 def create_payload(user):
   return {
     'id': user.id,
@@ -42,7 +44,9 @@ class LoginAPIView(views.APIView):
 
     response = Response()
 
-    response.set_cookie(key='access_token', value=access_token, httponly=True, max_age=20)
+    response.set_cookie(
+      key='access_token', value=access_token, httponly=True, max_age=FIFTEEN_MINUTES_IN_SECONDS
+    )
     response.set_cookie(key='refresh_token', value=refresh_token, httponly=True)
 
     return response
@@ -67,7 +71,9 @@ class UserAPIView(views.APIView):
       serializer = UserSerializer(user)
 
       response = Response(serializer.data)
-      response.set_cookie(key='access_token', value=access_token, httponly=True, max_age=20)
+      response.set_cookie(
+        key='access_token', value=access_token, httponly=True, max_age=FIFTEEN_MINUTES_IN_SECONDS
+      )
 
       return response
     except:
