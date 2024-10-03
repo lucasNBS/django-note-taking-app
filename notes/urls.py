@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from .views import CreateNoteView, UpdateNoteView, DeleteNoteView, ListNoteView, DetailNoteView, ListDeletedNoteView, restore_note_view, FavoriteNoteView, ListFavoriteNoteView, ListTagNotesView, ListFolderNotesView, ListSharedNoteView
 
 urlpatterns = [
@@ -14,4 +14,5 @@ urlpatterns = [
   path("tag/<int:id>", ListTagNotesView.as_view(), name='notes-list-tag'),
   path("folder/<int:id>", ListFolderNotesView.as_view(), name='notes-list-folder'),
   path("shared", ListSharedNoteView.as_view(), name='notes-shared'),
+  path("api/", include('notes.api.urls')),
 ]

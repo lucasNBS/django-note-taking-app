@@ -22,3 +22,15 @@ class Note(SoftDeleteModel, ShareableModel):
 class Like(models.Model):
   user = models.ForeignKey(User, on_delete=models.PROTECT)
   note = models.ForeignKey(Note, on_delete=models.PROTECT)
+
+  def save(self, **kwargs):
+    if self.pk is None:
+      like_already_exists = Like.objects.filter(
+        user=self.user,
+        note=self.note,
+      ).exists()
+
+      if like_already_exists:
+        return None
+
+    return super().save(**kwargs)
