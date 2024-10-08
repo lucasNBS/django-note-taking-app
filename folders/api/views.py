@@ -4,7 +4,7 @@ from rest_framework import viewsets, parsers, exceptions
 from accounts.api.permissions import IsAuthenticated
 from accounts.api.utils import get_user
 from core.choices import DataType
-from core.permissions import HasAccess
+from core.permissions import HasAccessToShareableModelData
 from permissions.models import Permission
 
 from .serializers import FoldersSerializer
@@ -13,7 +13,7 @@ from ..models import Folders
 class FoldersView(viewsets.ModelViewSet):
   queryset = Folders.objects.all()
   serializer_class = FoldersSerializer
-  permission_classes = (IsAuthenticated, HasAccess)
+  permission_classes = (IsAuthenticated, HasAccessToShareableModelData)
 
   def list(self, request):
     user = get_user(request)

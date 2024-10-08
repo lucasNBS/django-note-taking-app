@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from .views import ListPermissions, CreatePermissions, UpdatePermissions, DeletePermissions
 
 urlpatterns = [
@@ -6,4 +6,5 @@ urlpatterns = [
   path("create/<int:data_id>", CreatePermissions.as_view(), name='notes-permissions-create'),
   path("update/<int:data_id>/<int:id>", UpdatePermissions.as_view(), name='notes-permissions-update'),
   path("remove/<int:data_id>/<int:id>", DeletePermissions.as_view(), name='notes-permissions-remove'),
+  path("api/", include('permissions.api.urls')),
 ]

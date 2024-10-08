@@ -6,7 +6,7 @@ from rest_framework import viewsets, exceptions, views
 from accounts.api.permissions import IsAuthenticated
 from accounts.api.utils import get_user
 from core.choices import DataType
-from core.permissions import HasAccess
+from core.permissions import HasAccessToShareableModelData
 from permissions.choices import PermissionType
 from permissions.models import Permission
 
@@ -16,7 +16,7 @@ from ..models import Note, Like
 class NotesView(viewsets.ModelViewSet):
   queryset = Note.objects.all()
   serializer_class = NoteSerializer
-  permission_classes = (IsAuthenticated, HasAccess)
+  permission_classes = (IsAuthenticated, HasAccessToShareableModelData)
 
   def _get_notes_user_has_access(self, request):
     user = get_user(request)
@@ -123,3 +123,10 @@ class NotesView(viewsets.ModelViewSet):
     queryset = self._apply_filters(notes_user_has_access)
     serializer = self.serializer_class(queryset, many=True)
     return Response(serializer.data)
+
+  def create(self, request):
+    user = get_user(request)
+    response = super().create(request)
+    note = self.queryset.get(id=response.data['id'])
+    Permission.objects.create(data=note, user=user, type=PermissionType.CREATOR)
+    return response
