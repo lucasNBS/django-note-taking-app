@@ -21,5 +21,11 @@ class FoldersView(viewsets.ModelViewSet):
       user=user, data__type=DataType.FOLDER
     ).values_list("data__id", flat=True)
     queryset = Folders.objects.filter(id__in=folders_user_has_access_id)
+
+    page = self.paginate_queryset(queryset)
+    if page is not None:
+      serializer = self.serializer_class(page, many=True)
+      return self.get_paginated_response(serializer.data)
+
     serializer = FoldersSerializer(queryset, many=True)
     return Response(serializer.data)

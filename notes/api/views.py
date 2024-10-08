@@ -76,6 +76,12 @@ class NotesView(viewsets.ModelViewSet):
     )
 
     queryset = self._apply_filters(starred_notes_user_has_access)
+
+    page = self.paginate_queryset(queryset)
+    if page is not None:
+      serializer = self.serializer_class(page, many=True)
+      return self.get_paginated_response(serializer.data)
+
     serializer = self.serializer_class(queryset, many=True)
     return Response(serializer.data)
 
@@ -84,6 +90,12 @@ class NotesView(viewsets.ModelViewSet):
     notes_user_has_access = self._get_notes_user_has_access(request)
     deleted_notes_user_has_access = notes_user_has_access.filter(is_deleted=True)
     queryset = self._apply_filters(deleted_notes_user_has_access)
+
+    page = self.paginate_queryset(queryset)
+    if page is not None:
+      serializer = self.serializer_class(page, many=True)
+      return self.get_paginated_response(serializer.data)
+
     serializer = self.serializer_class(queryset, many=True)
     return Response(serializer.data)
 
@@ -98,9 +110,17 @@ class NotesView(viewsets.ModelViewSet):
         Q(type=PermissionType.READER) | Q(type=PermissionType.EDITOR)
       ).exists():
         shared_notes_user_has_access_ids.append(note.id)
-    shared_notes_user_has_access = notes_user_has_access.filter(id__in=shared_notes_ids)
+    shared_notes_user_has_access = notes_user_has_access.filter(
+      id__in=shared_notes_user_has_access_ids
+    )
 
     queryset = self._apply_filters(shared_notes_user_has_access)
+    
+    page = self.paginate_queryset(queryset)
+    if page is not None:
+      serializer = self.serializer_class(page, many=True)
+      return self.get_paginated_response(serializer.data)
+
     serializer = self.serializer_class(queryset, many=True)
     return Response(serializer.data)
 
@@ -121,6 +141,12 @@ class NotesView(viewsets.ModelViewSet):
   def list(self, request):
     notes_user_has_access = self._get_notes_user_has_access(request)
     queryset = self._apply_filters(notes_user_has_access)
+
+    page = self.paginate_queryset(queryset)
+    if page is not None:
+      serializer = self.serializer_class(page, many=True)
+      return self.get_paginated_response(serializer.data)
+
     serializer = self.serializer_class(queryset, many=True)
     return Response(serializer.data)
 

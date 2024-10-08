@@ -15,5 +15,11 @@ class TagView(viewsets.ModelViewSet):
   def list(self, request):
     user = get_user(request)
     queryset = Tag.objects.filter(created_by=user)
+
+    page = self.paginate_queryset(queryset)
+    if page is not None:
+      serializer = self.serializer_class(page, many=True)
+      return self.get_paginated_response(serializer.data)
+
     serializer = TagSerializer(queryset, many=True)
     return Response(serializer.data)

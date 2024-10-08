@@ -29,8 +29,14 @@ class ListDataPermissionsView(mixins.RetrieveModelMixin, generics.GenericAPIView
   def retrieve(self, request, pk=None):
     user = get_user(request)
     data = self._get_data(pk)
-    permissions = Permission.objects.filter(data=data)
-    serializer = self.serializer_class(permissions, many=True)
+    queryset = Permission.objects.filter(data=data)
+
+    page = self.paginate_queryset(queryset)
+    if page is not None:
+      serializer = self.serializer_class(page, many=True)
+      return self.get_paginated_response(serializer.data)
+
+    serializer = self.serializer_class(queryset, many=True)
     return Response(serializer.data)
 
   def get(self, request, pk=None):
@@ -207,8 +213,14 @@ class ListUserPermissionsView(mixins.ListModelMixin, generics.GenericAPIView):
 
   def retrieve(self, request, pk=None):
     user = get_user(request)
-    permissions = Permission.objects.filter(user=user)
-    serializer = self.serializer_class(permissions, many=True)
+    queryset = Permission.objects.filter(user=user)
+
+    page = self.paginate_queryset(queryset)
+    if page is not None:
+      serializer = self.serializer_class(page, many=True)
+      return self.get_paginated_response(serializer.data)
+    
+    serializer = self.serializer_class(queryset, many=True)
     return Response(serializer.data)
 
   def get(self, request, pk=None):
