@@ -8,7 +8,7 @@ from . import views
 from .. import models
 
 # Create your tests here.
-class AuthenticationAPITestCase(APITestCase):
+class TagAPITestCase(APITestCase):
   @classmethod
   def setUpTestData(self):
     self.client = APIClient()
