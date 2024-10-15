@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django.core.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import viewsets, exceptions, views
@@ -9,6 +10,7 @@ from core.choices import DataType
 from core.permissions import HasAccessToShareableModelData
 from permissions.choices import PermissionType
 from permissions.models import Permission
+from folders.models import Folders
 
 from .serializers import NoteSerializer
 from ..models import Note, Like
@@ -32,17 +34,14 @@ class NotesView(viewsets.ModelViewSet):
     if query_params.get('title', None):
       queryset = queryset.filter(title__icontains=query_params.get('title'))
 
-    if query_params.get('start_date', None):
-      queryset = queryset.filter(created_at__gte=query_params.get('start_date'))
+    if query_params.get('start-date', None):
+      queryset = queryset.filter(created_at__gte=query_params.get('start-date'))
 
-    if query_params.get('end_date', None):
-      queryset = queryset.filter(created_at__lte=query_params.get('end_date'))
+    if query_params.get('end-date', None):
+      queryset = queryset.filter(created_at__lte=query_params.get('end-date'))
 
     if query_params.get('tags', None):
       queryset = queryset.filter(tags__id__in=query_params.get('tags'))
-
-    if query_params.get('folder', None) is not None:
-      queryset = queryset.filter(folder__id=query_params.get('folder'))
 
     return queryset
 
@@ -55,10 +54,11 @@ class NotesView(viewsets.ModelViewSet):
       data__id=int(pk),
       type=PermissionType.CREATOR,
     ).exists()
-    if permission_exists:
-      note = Note.all_objects.filter(is_deleted=True).get(id=int(pk))
-      note.restore()
-    
+    if not permission_exists:
+      raise PermissionDenied("You cannot perform this action")
+
+    note = Note.all_objects.filter(is_deleted=True).get(id=int(pk))
+    note.restore()
     serializer = self.serializer_class(note)
     return Response(serializer.data)
 
@@ -90,6 +90,27 @@ class NotesView(viewsets.ModelViewSet):
     notes_user_has_access = self._get_notes_user_has_access(request)
     deleted_notes_user_has_access = notes_user_has_access.filter(is_deleted=True)
     queryset = self._apply_filters(deleted_notes_user_has_access)
+
+    page = self.paginate_queryset(queryset)
+    if page is not None:
+      serializer = self.serializer_class(page, many=True)
+      return self.get_paginated_response(serializer.data)
+
+    serializer = self.serializer_class(queryset, many=True)
+    return Response(serializer.data)
+
+  @action(detail=False, methods=['get'])
+  def folder(self, request, pk=None):
+    user = get_user(request)
+
+    permission = Permission.objects.filter(user=user, data__id=int(pk), data__type=DataType.FOLDER)
+
+    if not permission.exists():
+      raise PermissionDenied("You do not have access to this folder")
+
+    notes_user_has_access = self._get_notes_user_has_access(request)
+    folder_notes = notes_user_has_access.filter(folder__id=int(pk))
+    queryset = self._apply_filters(folder_notes)
 
     page = self.paginate_queryset(queryset)
     if page is not None:
@@ -156,3 +177,34 @@ class NotesView(viewsets.ModelViewSet):
     note = self.queryset.get(id=response.data['id'])
     Permission.objects.create(data=note, user=user, type=PermissionType.CREATOR)
     return response
+
+  def update(self, request, *args, **kwargs):
+    obj = self.get_object()
+
+    permission = Permission.objects.filter(
+      user=request.user,
+      data__id=obj.id,
+    ).exclude(type=PermissionType.READER)
+
+    if not permission.exists():
+      raise PermissionDenied("You cannot perform this action")
+
+    return super().update(request, *args, **kwargs)
+
+  def destroy(self, request, *args, **kwargs):
+    obj = self.get_object()
+
+    permission = Permission.objects.filter(
+      user=request.user,
+      data__id=obj.id,
+      data__type=DataType.NOTE,
+      type=PermissionType.CREATOR,
+    )
+
+    if not permission.exists():
+      raise PermissionDenied("You cannot perform this action")
+
+    permission.first().delete()
+    obj.delete()
+
+    return Response(status=204)
