@@ -19,6 +19,6 @@ class TagSerializer(serializers.ModelSerializer):
 
   def create(self, validated_data):
     instance = self.Meta.model(**validated_data)
-    instance.created_by = get_user(self.context['request'])
+    instance.created_by = get_user(self.context.get('request'))
     instance.save()
     return instance

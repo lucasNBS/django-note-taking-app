@@ -23,9 +23,9 @@ from .views import redirect_home
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", redirect_home),
-    path('notes/', include('notes.urls')),
-    path('tags/', include('tags.urls')),
-    path('accounts/', include('accounts.urls')),
-    path('folders/', include('folders.urls')),
-    path('permissions/', include('permissions.urls')),
+    path('notes/', include('notes.urls'), name='notes'),
+    path('tags/', include('tags.urls'), name='tags'),
+    path('accounts/', include('accounts.urls'), name='accounts'),
+    path('folders/', include('folders.urls'), name='folders'),
+    path('permissions/', include('permissions.urls'), name='permissions'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
