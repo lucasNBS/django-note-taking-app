@@ -1,5 +1,5 @@
 from django.urls import reverse
-from rest_framework.test import APIClient, APITestCase, APIRequestFactory
+from rest_framework.test import APITestCase, APIRequestFactory
 from accounts import utils
 
 from accounts.api.utils import get_user
@@ -11,7 +11,6 @@ from .. import models
 class TagAPITestCase(APITestCase):
   @classmethod
   def setUpTestData(self):
-    self.client = APIClient()
     self.user = utils.create_default_user()
     self.tag = models.Tag.objects.create(title="Tag 1", created_by=self.user)
 

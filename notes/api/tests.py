@@ -1,5 +1,5 @@
 import datetime
-from rest_framework.test import APIClient, APITestCase, APIRequestFactory
+from rest_framework.test import APITestCase, APIRequestFactory
 
 from accounts import utils
 from accounts.api.utils import get_user
@@ -15,7 +15,6 @@ from .. import models
 class NoteOperationsAPITestCase(APITestCase):
   @classmethod
   def setUpTestData(self):
-    self.client = APIClient()
     self.user = utils.create_default_user()
     self.note = models.Note.objects.create(
       title="Note 1",
@@ -24,9 +23,6 @@ class NoteOperationsAPITestCase(APITestCase):
       folder=Folders.objects.get(title="General"),
     )
     Permission.objects.create(data=self.note, user=self.user, type=PermissionType.CREATOR)
-
-  def setUp(self):
-    utils.log_in_default_user(self.client)
 
   def test_api_list_notes(self):
     request = APIRequestFactory().get("/")
@@ -114,7 +110,6 @@ class NoteOperationsAPITestCase(APITestCase):
 class NotesValidationAPITestCase(APITestCase):
   @classmethod
   def setUpTestData(self):
-    self.client = APIClient()
     self.user = utils.create_default_user()
     self.note = models.Note.objects.create(
       title="Note 1",
@@ -122,9 +117,6 @@ class NotesValidationAPITestCase(APITestCase):
       content="Note 1 content",
       folder=Folders.objects.get(title="General"),
     )
-
-  def setUp(self):
-    utils.log_in_default_user(self.client)
 
   def test_api_editor_user_should_list_note_in_folder(self):
     folder = Folders.objects.create(title="Folder 1")
@@ -371,7 +363,6 @@ class NotesValidationAPITestCase(APITestCase):
 class NotesListTypesAPITestCase(APITestCase):
   @classmethod
   def setUpTestData(self):
-    self.client = APIClient()
     self.user = utils.create_default_user()
     self.note = models.Note.objects.create(
       title="Note 1",
@@ -417,7 +408,6 @@ class NotesListTypesAPITestCase(APITestCase):
 class NotesFilterAPITestCase(APITestCase):
   @classmethod
   def setUpTestData(self):
-    self.client = APIClient()
     self.user = utils.create_default_user()
     self.note = models.Note.objects.create(
       title="Note 1",

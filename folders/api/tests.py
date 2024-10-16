@@ -1,4 +1,4 @@
-from rest_framework.test import APIClient, APITestCase, APIRequestFactory
+from rest_framework.test import APITestCase, APIRequestFactory
 
 from accounts import utils
 from accounts.api.utils import get_user
@@ -12,13 +12,9 @@ from .. import models
 class FolderOperationsAPITestCase(APITestCase):
   @classmethod
   def setUpTestData(self):
-    self.client = APIClient()
     self.user = utils.create_default_user()
     self.folder = models.Folders.objects.create(title="Folder 1")
     Permission.objects.create(data=self.folder, user=self.user, type=PermissionType.CREATOR)
-
-  def setUp(self):
-    utils.log_in_default_user(self.client)
 
   def test_api_create_folder(self):
     folder_data = {
@@ -55,12 +51,8 @@ class FolderOperationsAPITestCase(APITestCase):
 class FoldersValidationAPITestCase(APITestCase):
   @classmethod
   def setUpTestData(self):
-    self.client = APIClient()
     self.user = utils.create_default_user()
     self.folder = models.Folders.objects.create(title="Folder 1")
-
-  def setUp(self):
-    utils.log_in_default_user(self.client)
 
   def test_api_editor_should_update_folder(self):
     Permission.objects.create(data=self.folder, user=self.user, type=PermissionType.EDITOR)

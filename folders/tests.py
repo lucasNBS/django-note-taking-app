@@ -12,10 +12,7 @@ from . import models, views
 class FoldersOperationsTestCase(TestCase):
   @classmethod
   def setUpTestData(self):
-    self.client = Client()
-    user = utils.create_default_user()
-    utils.log_in_default_user(self.client)
-    self.client_user = auth.get_user(self.client)
+    self.client_user = utils.create_default_user()
     self.folder = models.Folders.objects.create(title="Folder 1")
     Permission.objects.create(data=self.folder, user=self.client_user, type=PermissionType.CREATOR)
 
@@ -134,10 +131,7 @@ class FoldersValidationTestCase(TestCase):
 class FoldersAutocompleteTestCase(TestCase):
   @classmethod
   def setUpTestData(self):
-    self.client = Client()
-    user = utils.create_default_user()
-    utils.log_in_default_user(self.client)
-    self.client_user = auth.get_user(self.client)
+    self.client_user = utils.create_default_user()
     self.folder = models.Folders.objects.create(title="Folder 1")
     Permission.objects.create(data=self.folder, user=self.client_user, type=PermissionType.CREATOR)
 

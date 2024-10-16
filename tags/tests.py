@@ -1,5 +1,5 @@
 from django.contrib import auth
-from django.test import TestCase, RequestFactory, Client
+from django.test import TestCase, RequestFactory
 
 from accounts import utils
 
@@ -9,10 +9,7 @@ from . import models, views
 class TagsOperationsTestCase(TestCase):
   @classmethod
   def setUpTestData(self):
-    self.client = Client()
-    user = utils.create_default_user()
-    utils.log_in_default_user(self.client)
-    self.client_user = auth.get_user(self.client)
+    self.client_user = utils.create_default_user()
     self.tag = models.Tag.objects.create(title="Tag 1", created_by=self.client_user)
 
   def test_create_tag(self):
@@ -49,10 +46,7 @@ class TagsOperationsTestCase(TestCase):
 class TagsAutocompleteTestCase(TestCase):
   @classmethod
   def setUpTestData(self):
-    self.client = Client()
-    user = utils.create_default_user()
-    utils.log_in_default_user(self.client)
-    self.client_user = auth.get_user(self.client)
+    self.client_user = utils.create_default_user()
     self.tag = models.Tag.objects.create(title="Tag 1", created_by=self.client_user)
 
   def test_autocomplete_list_tag(self):
