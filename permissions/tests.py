@@ -26,10 +26,7 @@ def create_folder_permission_to_user_to_share_data(self):
 class PermissionsOperationsTestCase(TestCase):
   @classmethod
   def setUpTestData(self):
-    self.client = Client()
-    user = utils.create_default_user()
-    utils.log_in_default_user(self.client)
-    self.client_user = auth.get_user(self.client)
+    self.client_user = utils.create_default_user()
 
     self.folder = Folders.objects.create(title="Folder 1")
     self.permission = models.Permission.objects.create(
@@ -122,10 +119,7 @@ class PermissionsOperationsTestCase(TestCase):
 class FolderPermissionsTestCase(TestCase):
   @classmethod
   def setUpTestData(self):
-    self.client = Client()
-    user = utils.create_default_user()
-    utils.log_in_default_user(self.client)
-    self.client_user = auth.get_user(self.client)
+    self.client_user = utils.create_default_user()
 
     self.folder = Folders.objects.create(title="Folder 1")
     self.permission = models.Permission.objects.create(

@@ -46,8 +46,7 @@ class NotePermissionsView(ListDataPermissionsView, mixins.CreateModelMixin):
   queryset = Note.objects.all()
 
   def create(self, request, pk):
-    data = parsers.JSONParser().parse(request)
-
+    data = request.data.copy()
     data['data'] = pk
     serializer = self.serializer_class(data=data)
 
@@ -77,8 +76,7 @@ class FolderPermissionsView(ListDataPermissionsView, mixins.CreateModelMixin):
         Permission.objects.create(data=note, user=user, type=data['type'])
 
   def create(self, request, pk):
-    data = parsers.JSONParser().parse(request)
-
+    data = request.data.copy()
     data['data'] = pk
     serializer = self.serializer_class(data=data)
 
@@ -121,7 +119,6 @@ class DetailNotePermissionView(
   queryset = Permission.objects.filter(data__type=DataType.NOTE)
 
   def update(self, request, pk):
-    data = parsers.JSONParser().parse(request)
     permission = self._get_permission(pk)
 
     if permission.type == PermissionType.CREATOR:
@@ -129,7 +126,7 @@ class DetailNotePermissionView(
         {"message": "Cannot edit CREATOR permission"}
       )
 
-    serializer = self.serializer_class(permission, data=data)
+    serializer = self.serializer_class(permission, data=request.data)
     if serializer.is_valid():
       serializer.save()
       return Response(serializer.data, status=200)
@@ -166,7 +163,6 @@ class DetailFolderPermissionView(
     folder_notes.update(type=constants.permissions_relation[permission.type])
 
   def update(self, request, pk):
-    data = parsers.JSONParser().parse(request)
     permission = self._get_permission(pk)
 
     if permission.type == PermissionType.CREATOR:
@@ -174,9 +170,9 @@ class DetailFolderPermissionView(
         {"message": "Cannot edit CREATOR permission"}
       )
 
-    serializer = self.serializer_class(permission, data=data)
+    serializer = self.serializer_class(permission, data=request.data)
     if serializer.is_valid():
-      self._update_shared_folder_notes(permission, data)
+      self._update_shared_folder_notes(permission, request.data)
       serializer.save()
       return Response(serializer.data, status=200)
     return Response(serializer.errors, status=400)
