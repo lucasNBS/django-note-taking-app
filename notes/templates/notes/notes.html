@@ -1,4 +1,6 @@
-{% extends 'base.html' %} {% load static %} {% block head %}
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
 <script src="{% static 'js/favorite_note.js' %}" defer></script>
 <script src="{% static 'js/filters.js' %}" defer></script>
 {% endblock %} {% block content %}
@@ -44,12 +46,8 @@
     {% include 'notes/_filters.html' %}
   </div>
   
-  <section
-    class="grid gap-2 xl:grid-cols-4 md:grid-cols-3 sm: grid-cols-2 p-8 pt-4"
-  >
-    {% for note in page_obj %}
-    <div>{% include 'notes/_card.html' %}</div>
-    {% endfor %}
+  <section>
+    {% include 'notes/_body.html' %}
   </section>
 </section>
 {% endblock %}

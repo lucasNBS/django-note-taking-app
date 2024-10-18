@@ -1,0 +1,98 @@
+{% load utils %}
+<div id="body-4-cols" class="flex grow gap-2 p-8 pt-4 max-[949px]:hidden max-[1023px]:flex max-[1300px]:hidden">
+  <div class="flex flex-1 flex-col gap-2">
+    {% for note in page_obj %}
+      {% if forloop.counter|rest:4 == 1 %}
+        <div>{% include 'notes/_card.html' %}</div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class="flex flex-1 flex-col gap-2">
+    {% for note in page_obj %}
+      {% if forloop.counter|rest:4 == 2 %}
+        <div>{% include 'notes/_card.html' %}</div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class="flex flex-1 flex-col gap-2">
+    {% for note in page_obj %}
+      {% if forloop.counter|rest:4 == 3 %}
+        <div>{% include 'notes/_card.html' %}</div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class="flex flex-1 flex-col gap-2">
+    {% for note in page_obj %}
+      {% if forloop.counter|rest:4 == 0 %}
+        <div>{% include 'notes/_card.html' %}</div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+<div id="body-3-cols" class="flex grow gap-2 p-8 pt-4 max-[1023px]:hidden min-[1301px]:hidden max-[949px]:flex max-[767px]:hidden">
+  <div class="flex flex-1 flex-col gap-2">
+    {% for note in page_obj %}
+      {% if forloop.counter|rest:3 == 1 %}
+        <div>{% include 'notes/_card.html' %}</div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class="flex flex-1 flex-col gap-2">
+    {% for note in page_obj %}
+      {% if forloop.counter|rest:3 == 2 %}
+        <div>{% include 'notes/_card.html' %}</div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class="flex flex-1 flex-col gap-2">
+    {% for note in page_obj %}
+      {% if forloop.counter|rest:3 == 0 %}
+        <div>{% include 'notes/_card.html' %}</div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+<div id="body-2-cols" class="flex grow gap-2 p-8 pt-4 min-[768px]:hidden">
+  <div class="flex flex-1 flex-col gap-2">
+    {% for note in page_obj %}
+      {% if forloop.counter|rest:2 == 1 %}
+        <div>{% include 'notes/_card.html' %}</div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class="flex flex-1 flex-col gap-2">
+    {% for note in page_obj %}
+      {% if forloop.counter|rest:2 == 0 %}
+        <div>{% include 'notes/_card.html' %}</div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+<script>
+  const size = window.innerWidth
+
+  const body4Cols = document.querySelector("#body-4-cols")
+  const body3Cols = document.querySelector("#body-3-cols")
+  const body2Cols = document.querySelector("#body-2-cols")
+
+  if (size > 1300) {
+    body3Cols.remove()
+    body2Cols.remove()
+  }
+  if (size <= 1300 && size >= 1024) {
+    body4Cols.remove()
+    body2Cols.remove()
+  }
+  if (size < 1024 && size >= 950) {
+    body3Cols.remove()
+    body2Cols.remove()
+  }
+  if (size < 950 && size >= 768) {
+    body4Cols.remove()
+    body2Cols.remove()
+  }
+  if (size < 768) {
+    body4Cols.remove()
+    body3Cols.remove()
+  }
+</script>
