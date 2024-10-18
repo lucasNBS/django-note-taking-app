@@ -1,102 +1,32 @@
 {
-  const autocompletes = document.querySelectorAll(
-    "[data-autocomplete-multiple]"
-  );
+  function createDropdownElement(option) {
+    const dropdownElement = document.createElement("div");
 
-  autocompletes.forEach((e) => {
-    const input = e.querySelector("[data-autocomplete-multiple-input]");
-    const selectedContainer = e.querySelector(
-      "[data-autocomplete-multiple-selected]"
+    dropdownElement.classList.add(
+      "p-2",
+      "border-b-2",
+      "border-gray-300",
+      "cursor-pointer",
+      "hover:bg-gray-300"
     );
-    const sugestionsContainer = e.querySelector(
-      "[data-autocomplete-multiple-sugestions]"
-    );
+    dropdownElement.dataset.value = option.id;
+    dropdownElement.innerText = option.title;
 
-    document.addEventListener("click", (e) => {
-      const clickedElement = e.target;
-      if (
-        !(
-          clickedElement.dataset.autocompleteInput ||
-          clickedElement.dataset.autocompleteSugestions
-        )
-      ) {
-        sugestionsContainer.innerHTML = "";
-      }
-    });
-
-    let timeout;
-    input.addEventListener("keyup", (e) => {
-      clearTimeout(timeout);
-      sugestionsContainer.innerHTML = "";
-
-      timeout = setTimeout(async () => {
-        const results = await fetch(
-          `http://localhost:8000/tags/autocomplete?search=${e.target.value}`
-        ).then((res) => res.json());
-
-        results.forEach((option) => {
-          const dropdownElement = document.createElement("div");
-
-          dropdownElement.classList.add(
-            "p-2",
-            "border-b-2",
-            "border-gray-300",
-            "cursor-pointer",
-            "hover:bg-gray-300"
-          );
-          dropdownElement.dataset.value = option.id;
-          dropdownElement.innerText = option.title;
-          sugestionsContainer.appendChild(dropdownElement);
-
-          dropdownElement.addEventListener("click", () => {
-            selectOption(option, input, sugestionsContainer, selectedContainer);
-          });
-        });
-      }, 600);
-    });
-
-    const selectedOptions = selectedContainer.querySelectorAll("[data-value]");
-
-    selectedOptions.forEach((option) => {
-      const checkbox = markCheckbox({ id: option.dataset.value }, input);
-      const closeButton = option.querySelector("[data-remove]");
-      closeButton.addEventListener("click", (e) => {
-        e.target.closest("div").remove();
-        checkbox.click();
-      });
-    });
-  });
-
-  function selectOption(option, input, sugestionsContainer, selectedContainer) {
-    const tagOfSelectedItem = selectedContainer.querySelector(
-      `[data-value='${option.id}']`
-    );
-
-    if (tagOfSelectedItem) {
-      return;
-    }
-
-    const checkbox = markCheckbox(option, input);
-    createSelectedItem(option, selectedContainer, checkbox);
-    sugestionsContainer.innerHTML = "";
+    return dropdownElement;
   }
 
-  function markCheckbox(option, input) {
+  function createCheckbox(optionId) {
     const checkbox = document.createElement("input");
 
     checkbox.setAttribute("type", "checkbox");
     checkbox.setAttribute("name", "tags");
     checkbox.setAttribute("id", "id_tags");
-    checkbox.setAttribute("value", option.id);
-
-    input.append(checkbox);
-
-    checkbox.click();
+    checkbox.setAttribute("value", optionId);
 
     return checkbox;
   }
 
-  function createSelectedItem(option, selectedContainer, checkbox) {
+  function createSelectedItem(option, checkbox) {
     const optionContainer = document.createElement("div");
     optionContainer.classList.add(
       "bg-gray-500",
@@ -124,6 +54,102 @@
     optionContainer.append(nameElement);
     optionContainer.append(closeButton);
 
-    selectedContainer.append(optionContainer);
+    return optionContainer;
   }
+
+  class AutocompleteMultiple {
+    constructor(element) {
+      this.element = element;
+      this.input = element.querySelector("[data-autocomplete-multiple-input]");
+      this.selectedOptionsContainer = element.querySelector(
+        "[data-autocomplete-multiple-selected]"
+      );
+      this.sugestionsContainer = element.querySelector(
+        "[data-autocomplete-multiple-sugestions]"
+      );
+      this.selectedOptions =
+        this.selectedOptionsContainer.querySelectorAll("[data-value]");
+      this.init();
+    }
+
+    init() {
+      let timeout;
+      this.input.addEventListener("keyup", () => {
+        clearTimeout(timeout);
+        this.sugestionsContainer.innerHTML = "";
+
+        timeout = setTimeout(async () => await this.search(this.input), 600);
+      });
+      this.selectedOptions.forEach((option) => {
+        this.selectInitialSelectedOptions(option);
+      });
+
+      document.addEventListener("click", (event) => {
+        const clickedElement = event.target;
+        if (
+          !(
+            clickedElement.dataset.autocompleteInput ||
+            clickedElement.dataset.autocompleteSugestions
+          )
+        ) {
+          this.sugestionsContainer.innerHTML = "";
+        }
+      });
+    }
+
+    async search(input) {
+      const results = await fetch(
+        `http://localhost:8000/tags/autocomplete?search=${input.value}`
+      ).then((res) => res.json());
+
+      results.forEach((option) => {
+        const dropdownElement = createDropdownElement(option);
+        this.sugestionsContainer.appendChild(dropdownElement);
+
+        dropdownElement.addEventListener("click", () => {
+          this.selectOption(option);
+        });
+      });
+    }
+
+    selectOption(option) {
+      const tagOfSelectedItem = this.selectedOptionsContainer.querySelector(
+        `[data-value='${option.id}']`
+      );
+
+      if (tagOfSelectedItem) {
+        return;
+      }
+
+      const checkbox = this.markCheckbox(option.id);
+      const selectedItem = createSelectedItem(option, checkbox);
+      this.selectedOptionsContainer.append(selectedItem);
+      this.sugestionsContainer.innerHTML = "";
+    }
+
+    selectInitialSelectedOptions(option) {
+      const checkbox = this.markCheckbox(option.dataset.value);
+      const closeButton = option.querySelector("[data-remove]");
+      closeButton.addEventListener("click", (event) => {
+        event.target.closest("div").remove();
+        checkbox.click();
+      });
+    }
+
+    // Selected option must have a checked checkbox to include its value in form
+    markCheckbox(optionId) {
+      const checkbox = createCheckbox(optionId);
+      this.input.append(checkbox);
+      checkbox.click();
+      return checkbox;
+    }
+  }
+
+  const autocompletes = document.querySelectorAll(
+    "[data-autocomplete-multiple]"
+  );
+
+  autocompletes.forEach((autocomplete) => {
+    new AutocompleteMultiple(autocomplete);
+  });
 }
