@@ -1,34 +1,42 @@
 {
   const backgroundElement = document.querySelector("#modal-form-background");
   const modalElement = document.querySelector("#modal-form");
-  const actionButtons = document.querySelectorAll("[data-form-modal]");
+  const openModalButtons = document.querySelectorAll("[data-form-modal]");
 
   const modal = new Modal(modalElement, backgroundElement);
 
-  modal.element.querySelector("form").addEventListener("submit", (e) => {
-    e.preventDefault();
-
+  function validateModalData() {
     const input = modal.element.querySelector("input#id_title");
 
     if (input.value.length > 50) {
       const error = this.element.querySelector("[data-modal-error]");
       error.classList.remove("h-0");
-      return;
+      return false;
     }
 
-    e.target.submit();
+    return true;
+  }
+
+  modal.element.querySelector("form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const is_valid = validateModalData();
+    if (is_valid) {
+      e.target.submit();
+    }
   });
 
-  actionButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      modal.element.querySelector("[data-modal-title]").innerText =
-        button.dataset.modalTitle;
-      modal.element
-        .querySelector("input#id_title")
-        .setAttribute("value", button.dataset.modalValue);
-      modal.element.querySelector("[data-modal-form]").action =
-        button.dataset.url;
-      modal.open();
-    });
+  function openModalWithSelectedInstanceData() {
+    modal.element.querySelector("[data-modal-title]").innerText =
+      button.dataset.modalTitle;
+    modal.element
+      .querySelector("input#id_title")
+      .setAttribute("value", button.dataset.modalValue);
+    modal.element.querySelector("[data-modal-form]").action =
+      button.dataset.url;
+    modal.open();
+  }
+
+  openModalButtons.forEach((button) => {
+    button.addEventListener("click", openModalWithSelectedInstanceData);
   });
 }

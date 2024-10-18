@@ -797,6 +797,10 @@ video {
   width: 352px;
 }
 
+.w-\[70\%\] {
+  width: 70%;
+}
+
 .w-fit {
   width: -moz-fit-content;
   width: fit-content;
@@ -813,10 +817,6 @@ video {
 
 .w-screen {
   width: 100vw;
-}
-
-.w-\[70\%\] {
-  width: 70%;
 }
 
 .min-w-\[26rem\] {
@@ -869,10 +869,6 @@ video {
 
 .resize-none {
   resize: none;
-}
-
-.grid-cols-2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .flex-col {
@@ -1432,6 +1428,10 @@ li.tag-item:hover div.tag-item-hover {
     position: absolute;
   }
 
+  .max-lg\:hidden {
+    display: none;
+  }
+
   .max-lg\:-translate-x-full {
     --tw-translate-x: -100%;
     transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
@@ -1441,18 +1441,8 @@ li.tag-item:hover div.tag-item-hover {
     flex-direction: column;
   }
 
-  .max-lg\:items-start {
-    align-items: flex-start;
-  }
-
   .max-lg\:gap-4 {
     gap: 1rem;
-  }
-}
-
-@media (max-width: 1024px) {
-  .max-\[1024px\]\:hidden {
-    display: none;
   }
 }
 
@@ -1466,34 +1456,12 @@ li.tag-item:hover div.tag-item-hover {
   }
 }
 
-@media (max-width: 951px) {
-  .max-\[951px\]\:flex {
-    display: flex;
-  }
-}
-
-@media (max-width: 950px) {
-  .max-\[950px\]\:flex {
-    display: flex;
-  }
-
-  .max-\[950px\]\:hidden {
-    display: none;
-  }
-}
-
 @media (max-width: 949px) {
   .max-\[949px\]\:flex {
     display: flex;
   }
 
   .max-\[949px\]\:hidden {
-    display: none;
-  }
-}
-
-@media (max-width: 768px) {
-  .max-\[768px\]\:hidden {
     display: none;
   }
 }
@@ -1525,45 +1493,13 @@ li.tag-item:hover div.tag-item-hover {
 }
 
 @media (min-width: 768px) {
-  .md\:grid-cols-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
   .min-\[768px\]\:hidden {
-    display: none;
-  }
-}
-
-@media (min-width: 769px) {
-  .min-\[769px\]\:hidden {
-    display: none;
-  }
-}
-
-@media (min-width: 951px) {
-  .min-\[951px\]\:hidden {
     display: none;
   }
 }
 
 @media (min-width: 1024px) {
   .lg\:hidden {
-    display: none;
-  }
-
-  .min-\[1024px\]\:hidden {
-    display: none;
-  }
-}
-
-@media (min-width: 1280px) {
-  .xl\:grid-cols-4 {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1300px) {
-  .min-\[1300px\]\:hidden {
     display: none;
   }
 }
