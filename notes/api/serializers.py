@@ -4,6 +4,7 @@ from accounts.api.utils import get_user
 from permissions import models, choices
 from tags.models import Tag 
 from folders.models import Folders
+from folders.utils import is_general_folder
 
 from ..models import Note
 
@@ -41,7 +42,7 @@ class NoteSerializer(serializers.ModelSerializer):
 
   def _validate_folder(self, folder, user):
     # Allow user to create notes in 'General' folder
-    if folder == Folders.objects.filter(title="General").first():
+    if is_general_folder(folder):
       return
 
     user_permission_to_folder = models.Permission.objects.filter(user=user, data=folder).first()

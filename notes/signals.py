@@ -4,6 +4,7 @@ from django.dispatch import receiver
 from .models import Note
 
 from folders.models import Folders
+from folders.utils import is_general_folder
 from permissions import models, choices
 
 @receiver(post_save, sender=Note)
@@ -12,7 +13,7 @@ def create_permission_for_users_that_has_access(sender, instance, created, **kwa
     folder = instance.folder
 
     # Do not share notes in General folder
-    if folder.id == Folders.objects.filter(title="General").first().id:
+    if is_general_folder(folder):
       return
 
     permissions = models.Permission.objects.filter(data=folder).exclude(

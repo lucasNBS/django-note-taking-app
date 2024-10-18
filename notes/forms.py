@@ -3,6 +3,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from notes.models import Note, Like
 from folders.models import Folders
+from folders.utils import is_general_folder
 from permissions.models import Permission
 from permissions.choices import PermissionType
 from core import widgets, choices
@@ -28,7 +29,7 @@ class NoteForm(forms.ModelForm):
     folder = self.cleaned_data['folder']
 
     # Allow user to create notes in 'General' Folder
-    if folder.id == Folders.objects.filter(title="General").first().id:
+    if is_general_folder(folder):
       return folder
     
     permission = Permission.objects.filter(
