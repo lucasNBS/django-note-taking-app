@@ -35,6 +35,14 @@ li.tag-item:hover div.tag-item-hover {
   z-index: 50;
 }
 
+.z-40 {
+  z-index: 40;
+}
+
+.-translate-x-full {
+  transform: translateX(-100%);
+}
+
 .p-2 {
   padding: 0.5rem;
 }

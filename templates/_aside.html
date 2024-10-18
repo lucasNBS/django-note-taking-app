@@ -1,0 +1,175 @@
+<div
+  id="menu-background"
+  class="bg-black bg-opacity-50 fixed top-0 left-0 w-screen h-screen -z-10 flex items-center justify-center overflow-y-auto"
+></div>
+<aside
+  class="flex flex-col justify-start items-start gap-3 grow-0 bg-gray-300 w-[352px] py-8 pl-4 pr-8 transition-transform {{ classes }}"
+  data-menu
+>
+  <div class="absolute text-3xl top-0 right-2 cursor-pointer" data-close-menu-button>
+    &times;
+  </div>
+  <div class="flex gap-2 items-center ml-1">
+    <img
+      class="rounded-full"
+      src="/media/images/profile.jpg"
+      alt="Profile picture"
+    />
+    <div class="flex flex-col">
+      <span
+        class="text-sm font-bold text-gray-700 text-ellipsis overflow-hidden whitespace-nowrap max-w-60"
+      >
+        {{ user.username }}
+      </span>
+      <span
+        class="text-xs text-gray-500 text-ellipsis overflow-hidden whitespace-nowrap max-w-64"
+      >
+        {{ user.email }}
+      </span>
+    </div>
+  </div>
+  {% if user.is_authenticated %}
+    <form class="ml-1" method="post" action="/accounts/logout/">
+      {% csrf_token %}
+      <button class="text-sm text-red-800">
+        <i class="fa fa-sign-out" aria-hidden="true"></i>
+        <span class="hover:underline">Log Out</span>
+      </button>
+    </form>
+  {% endif %}
+  <div class="w-full h-0.5 bg-gray-400 opacity-25"></div>
+  <nav class="ml-1">
+    <ul class="flex flex-col gap-2 text-sm text-gray-700">
+      <li>
+        <a href="{% url 'notes-list' %}">
+          <i class="fa fa-file-text" aria-hidden="true"></i>
+          <span class="hover:underline">All Notes</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'notes-shared' %}">
+          <i class="fa fa-users" aria-hidden="true"></i>
+          <span class="hover:underline">Shared</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'notes-starreds' %}">
+          <i class="fa fa-star" aria-hidden="true"></i>
+          <span class="hover:underline">Starred</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'notes-list-deleted' %}">
+          <i class="fa fa-trash" aria-hidden="true"></i>
+          <span class="hover:underline">Trash</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <div class="flex flex-col w-full">
+    <div class="flex justify-between items-center w-full">
+      <span class="text-sm text-gray-700 font-bold">Folders</span>
+      <i
+        data-form-modal
+        data-url="{% url 'folders-create' %}"
+        data-modal-value=""
+        data-modal-title="Create Folder"
+        class="fa fa-plus cursor-pointer transition-transform hover:scale-110" aria-hidden="true"
+      ></i>
+    </div>
+    <ul class="mt-1">
+      {% for folder in folders %}
+        <li class="tag-item relative rounded-md hover:bg-gray-400 cursor-pointer">
+          <a
+            class="flex justify-between py-2 px-3"
+            href="{% url 'notes-list-folder' folder.data.id %}"
+          >
+            <span
+              class="flex gap-2 items-center text-sm text-gray-700 overflow-hidden max-w-[calc(100%-53px)]"
+            >
+              <i class="fa fa-folder" aria-hidden="true"></i>
+              <p class="w-[150px] overflow-hidden text-ellipsis whitespace-nowrap">
+                {{ folder.data.title }}
+              </p>
+            </span>
+          </a>
+          <div class="tag-item-hover absolute top-0 right-0 w-max h-full opacity-0">
+            <span class="flex h-full gap-2 justify-end mr-3 items-center text-sm text-gray-700">
+              {% if folder.type != 'READER' %}
+                <i
+                  data-form-modal
+                  data-url="{% url 'folders-update' folder.data.id %}"
+                  data-modal-title="Update Folder"
+                  data-modal-value="{{ folder.data.title }}"
+                  class="fa fa-pencil-square-o text-gray-700 cursor-pointer transition-transform hover:scale-125"
+                  aria-hidden="true"
+                ></i>
+              {% endif %}
+              {% if folder.type == 'CREATOR' %}
+                <i
+                  data-confirm-modal
+                  data-url="{% url 'folders-delete' folder.data.id %}"
+                  data-modal-title="Confirm Delete"
+                  data-modal-text="Do you really want to delete this item?"
+                  class="fa fa-trash text-gray-700 cursor-pointer transition-transform hover:scale-125"
+                  aria-hidden="true"
+                ></i>
+              {% endif %}
+            </span>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="flex flex-col w-full">
+    <div class="flex justify-between items-center w-full">
+      <span class="text-sm text-gray-700 font-bold">Tags</span>
+      <i
+        data-form-modal
+        data-url="{% url 'tags-create' %}"
+        data-modal-value=""
+        data-modal-title="Create Tag"
+        class="fa fa-plus cursor-pointer transition-transform hover:scale-110" aria-hidden="true"
+      ></i>
+    </div>
+    <ul class="mt-1">
+      {% for tag in tags %}
+        <li class="tag-item relative rounded-md hover:bg-gray-400 cursor-pointer">
+          <a
+            class="flex justify-between py-2 px-3"
+            href="{% url 'notes-list-tag' tag.id %}"
+          >
+            <span
+              class="flex gap-2 items-center text-sm text-gray-700 overflow-hidden max-w-[calc(100%-53px)]"
+            >
+              <i class="fa fa-tag" aria-hidden="true"></i>
+              <p class="w-[150px] overflow-hidden text-ellipsis whitespace-nowrap">
+                {{ tag.title }}
+              </p>
+            </span>
+          </a>
+          <div class="tag-item-hover absolute top-0 right-0 w-max h-full opacity-0">
+            <span class="flex h-full gap-2 justify-end mr-3 items-center text-sm text-gray-700">
+              <i
+                data-form-modal
+                data-url="{% url 'tags-update' tag.id %}"
+                data-modal-title="Update Tag"
+                data-modal-value="{{ tag.title }}"
+                class="fa fa-pencil-square-o text-gray-700 cursor-pointer transition-transform hover:scale-125"
+                aria-hidden="true"
+              ></i>
+              <i
+                data-confirm-modal
+                data-url="{% url 'tags-delete' tag.id %}"
+                data-modal-title="Confirm Delete"
+                data-modal-text="Do you really want to delete this item?"
+                class="fa fa-trash text-gray-700 cursor-pointer transition-transform hover:scale-125"
+                aria-hidden="true"
+              ></i>
+            </span>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</aside>

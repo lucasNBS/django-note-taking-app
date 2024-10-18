@@ -1,5 +1,5 @@
-<div class="flex justify-between">
-  <div class="flex items-center gap-4">
+<div class="flex justify-between w-full">
+  <div class="flex items-center gap-4 w-full">
     <div class="flex gap-6">
       {% if page_obj.has_previous %}
         <a
@@ -26,6 +26,6 @@
         </span>
       {% endif %}
     </div>
-    <h1 class="font-bold text-2xl">{{ view.title }}</h1>
+    <h1 class="font-bold text-2xl overflow-hidden text-ellipsis whitespace-nowrap w-[70%]">{{ view.title }}</h1>
   </div>
 </div>
