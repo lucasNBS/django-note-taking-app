@@ -1,33 +1,35 @@
 from django import forms
 from django.core.exceptions import ValidationError
+
 from core.widgets import InputField
-from permissions import choices, models
-from .models import Folders
+
 from . import utils
+from .models import Folders
+
 
 class FolderForm(forms.ModelForm):
-  title = forms.CharField(widget=InputField(label='Title'))
+    title = forms.CharField(widget=InputField(label="Title"))
 
-  class Meta:
-    model = Folders
-    fields = ('title',)
+    class Meta:
+        model = Folders
+        fields = ("title",)
 
-  def __init__(self, creator=None, *args, **kwargs):
-    super().__init__(*args, **kwargs)
-    self.creator = creator
+    def __init__(self, creator=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.creator = creator
 
-  def clean_title(self):
-    title = self.cleaned_data["title"]
-    if len(title) > 50:
-      raise ValidationError("Max length is 50")
-    return title
-  
-  def save(self, *args, **kwargs):
-    already_created = True if self.instance.id else None
+    def clean_title(self):
+        title = self.cleaned_data["title"]
+        if len(title) > 50:
+            raise ValidationError("Max length is 50")
+        return title
 
-    save = super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        already_created = True if self.instance.id else None
 
-    if self.creator is not None and not already_created:
-      utils.create_permission_to_folder_user_has_just_created(self.instance, self.creator)
+        save = super().save(*args, **kwargs)
 
-    return save
+        if self.creator is not None and not already_created:
+            utils.create_permission_to_folder_user_has_just_created(self.instance, self.creator)
+
+        return save

@@ -12,7 +12,7 @@
     ></div>
   </div>
   <div data-autocomplete-multiple-selected class="flex gap-2 justify-start items-center mt-2">
-    {% if filter_variant %}      
+    {% if filter_variant %}
       {% for tag in tags_selected %}
         <div
           data-value="{{ tag.value }}"
@@ -32,7 +32,7 @@
             <span>{{ value.1.0.label }}</span>
             <span data-remove class="text-xl cursor-pointer">&times;</span>
           </div>
-        {% endif %}  
+        {% endif %}
       {% endfor %}
     {% endif %}
   </div>
