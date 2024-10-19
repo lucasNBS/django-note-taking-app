@@ -10,7 +10,7 @@ from core.models import ShareableModel
 from notes.models import Note
 from folders.models import Folders
 
-from .. import constants
+from .. import constants, utils
 from .serializers import PermissionSerializer
 from ..choices import PermissionType
 from ..models import Permission
@@ -63,26 +63,14 @@ class NotePermissionsView(ListDataPermissionsView, mixins.CreateModelMixin):
 class FolderPermissionsView(ListDataPermissionsView, mixins.CreateModelMixin):
   queryset = Folders.objects.all()
 
-  def _share_folder_notes(self, data):
-    folder_notes = self.queryset.get(id=data['data']).note_set.all()
-    user = User.objects.get(id=data['user'])
-
-    for note in folder_notes:
-      note_permission = Permission.objects.filter(user=user, data=note)
-
-      if note_permission.exists():
-        note_permission.update(type=constants.permissions_relation[data['type']])
-      else:
-        Permission.objects.create(data=note, user=user, type=data['type'])
-
   def create(self, request, pk):
     data = request.data.copy()
     data['data'] = pk
     serializer = self.serializer_class(data=data)
 
     if serializer.is_valid():
-      self._share_folder_notes(data)
-      serializer.save()
+      permission = serializer.save()
+      utils.create_access_to_notes_from_folder(permission)
       if serializer.data['id'] is None:
         raise exceptions.ValidationError({'message': 'The selected user already has permission'})
       return Response(serializer.data, status=201)
@@ -152,16 +140,6 @@ class DetailFolderPermissionView(
 ):
   queryset = Permission.objects.filter(data__type=DataType.FOLDER)
 
-  def _update_shared_folder_notes(self, permission, data):
-    user = User.objects.get(id=data['user'])
-    folder_notes = Permission.objects.filter(
-      user=user,
-      data__type=DataType.NOTE,
-      type=permission.type,
-      data__note__folder=permission.data
-    )
-    folder_notes.update(type=constants.permissions_relation[permission.type])
-
   def update(self, request, pk):
     permission = self._get_permission(pk)
 
@@ -172,23 +150,13 @@ class DetailFolderPermissionView(
 
     serializer = self.serializer_class(permission, data=request.data)
     if serializer.is_valid():
-      self._update_shared_folder_notes(permission, request.data)
+      utils.update_access_to_notes_from_folder(permission)
       serializer.save()
       return Response(serializer.data, status=200)
     return Response(serializer.errors, status=400)
 
   def patch(self, request, pk=None):
     return self.update(request, pk)
-
-  def _delete_shared_folder_notes_permissions(self, permission):
-    folder_notes = Permission.objects.filter(
-        user=permission.user,
-        data__type=DataType.NOTE,
-        type=permission.type,
-        data__note__folder=permission.data
-      )
-    for note in folder_notes:
-      note.delete()
 
   def delete(self, request, pk=None):
     permission = self._get_permission(pk)
@@ -198,9 +166,7 @@ class DetailFolderPermissionView(
         {"message": "Cannot delete CREATOR permission"}
       )
 
-    response = self.destroy(request, pk)
-    self._delete_shared_folder_notes_permissions(permission)
-    return response
+    return self.destroy(request, pk)
 
 class ListUserPermissionsView(mixins.ListModelMixin, generics.GenericAPIView):
   queryset = Permission.objects.all()

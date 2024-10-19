@@ -63,7 +63,7 @@ class IsCreatorOfShareableModelData(BaseAccess):
   def has_object_permission(self, request, view, obj):
     user = get_user(request)
     permission = models.Permission.objects.filter(
-      user=user, data=obj, type=choices.PermissionType.CREATOR
+      user=user, data=obj.data, type=choices.PermissionType.CREATOR
     ).first()
 
     if not permission:

@@ -8,11 +8,13 @@ from folders.models import Folders
 from .models import Permission
 from .choices import AllowToCreatePermissionType
 
-from . import choices, constants
+from . import choices, constants, utils
 
 class PermissionCreateForm(forms.ModelForm):
   user = forms.EmailField(
-    widget=widgets.InputField(type="email", small=True, placeholder="user@email.com", style_class="h-[40px] w-full")
+    widget=widgets.InputField(
+      type="email", small=True, placeholder="user@email.com", style_class="h-[40px] w-full"
+    )
   )
   
   class Meta:
@@ -33,18 +35,7 @@ class PermissionCreateForm(forms.ModelForm):
 
   def save(self, commit=True):
     if self.instance.data.type == DataType.FOLDER:
-      notes = Folders.objects.get(id=self.instance.data.id).note_set.all()
-
-      for note in notes:
-        permission_exists = Permission.objects.filter(user=self.instance.user, data=note).exists()
-
-        if permission_exists:
-          Permission.objects.filter(data=note, user=self.instance.user).update(
-            type=constants.permissions_relation[self.instance.type]
-          )
-        else:
-          Permission.objects.create(data=note, user=self.instance.user, type=self.instance.type)
-
+      utils.create_access_to_notes_from_folder(self.instance)
     return super().save(commit)
 
 class PermissionUpdateForm(forms.ModelForm):
@@ -55,13 +46,7 @@ class PermissionUpdateForm(forms.ModelForm):
 
   def save(self, commit=True):
     if self.instance.data.type == DataType.FOLDER:
-      notes = Permission.objects.filter(
-        user=self.instance.user,
-        data__type=DataType.NOTE,
-        type=self.instance.type,
-        data__note__folder=self.instance.data
-      )
-      notes.update(type=constants.permissions_relation[self.instance.type])
+      utils.update_access_to_notes_from_folder(self.instance)
 
     self.instance.type = constants.permissions_relation[self.instance.type]
     self.instance.save()

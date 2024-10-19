@@ -33,7 +33,9 @@ class ListPermissions(BaseContext, ListView):
 
   def get_queryset(self):
     id = self.kwargs["data_id"]
-    return models.Permission.objects.filter(data__id=id).exclude(type=choices.PermissionType.CREATOR)
+    return models.Permission.objects.filter(data__id=id).exclude(
+      type=choices.PermissionType.CREATOR
+    )
   
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
@@ -74,24 +76,6 @@ class DeletePermissions(DeleteView):
   def get_success_url(self):
     return f'/permissions/list/{self.kwargs["data_id"]}'
 
-  def _delete_notes_from_folder(self, obj):
-    notes = models.Permission.objects.filter(
-        user=obj.user,
-        data__type=DataType.NOTE,
-        type=obj.type,
-        data__note__folder=obj.data
-      )
-
-    for note in notes:
-      note.delete()
-
   def post(self, request, **kwargs):
-    obj = self.get_object()
-
     verify_user_permission(self)
-    post = super().post(self, request, **kwargs)
-
-    if obj.data.type == DataType.FOLDER:
-      self._delete_notes_from_folder(obj)
-
-    return post
+    return super().post(self, request, **kwargs)

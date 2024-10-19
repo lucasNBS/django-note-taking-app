@@ -1,7 +1,10 @@
 from django.db import models
 from accounts.models import User
 from core.models import ShareableModel
+from core.choices import DataType
 from .choices import PermissionType
+
+from . import utils
 
 # Create your models here.
 class Permission(models.Model):
@@ -20,3 +23,8 @@ class Permission(models.Model):
         return None
 
     return super().save(**kwargs)
+
+  def delete(self, **kwargs):
+    if self.data.type == DataType.FOLDER:
+      utils.delete_access_to_notes_from_folder(self)
+    return super().delete(**kwargs)

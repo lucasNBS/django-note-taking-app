@@ -25,7 +25,7 @@
     }
   });
 
-  function openModalWithSelectedInstanceData() {
+  function openModalWithSelectedInstanceData(button) {
     modal.element.querySelector("[data-modal-title]").innerText =
       button.dataset.modalTitle;
     modal.element
@@ -37,6 +37,8 @@
   }
 
   openModalButtons.forEach((button) => {
-    button.addEventListener("click", openModalWithSelectedInstanceData);
+    button.addEventListener("click", () =>
+      openModalWithSelectedInstanceData(button)
+    );
   });
 }
