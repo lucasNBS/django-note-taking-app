@@ -13,15 +13,15 @@ class Note(SoftDeleteModel, ShareableModel):
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
   tags = models.ManyToManyField(Tag, blank=True)
-  folder = models.ForeignKey(Folders, default=Folders.get_default_id, on_delete=models.PROTECT)
+  folder = models.ForeignKey(Folders, default=Folders.get_default_id, on_delete=models.CASCADE)
 
   def save(self, **kwargs):
     self.type = DataType.NOTE
     return super().save(**kwargs)
   
 class Like(models.Model):
-  user = models.ForeignKey(User, on_delete=models.PROTECT)
-  note = models.ForeignKey(Note, on_delete=models.PROTECT)
+  user = models.ForeignKey(User, on_delete=models.CASCADE)
+  note = models.ForeignKey(Note, on_delete=models.CASCADE)
 
   def save(self, **kwargs):
     if self.pk is None:

@@ -5,9 +5,9 @@ from .choices import PermissionType
 
 # Create your models here.
 class Permission(models.Model):
-  user = models.ForeignKey(User, on_delete=models.PROTECT)
+  user = models.ForeignKey(User, on_delete=models.CASCADE)
   type = models.CharField(choices=PermissionType, blank=False, null=False)
-  data = models.ForeignKey(ShareableModel, on_delete=models.PROTECT)
+  data = models.ForeignKey(ShareableModel, on_delete=models.CASCADE)
 
   def save(self, **kwargs):
     if self.pk is None:
