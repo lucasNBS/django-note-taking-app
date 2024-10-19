@@ -118,8 +118,8 @@ class ListNoteView(FilterNoteBaseView):
   title = "All Notes"
 
   def get_queryset(self):
-    user_notes_permissions = super().get_queryset()
-    return user_notes_permissions.filter(data__note__is_deleted=False)
+    permissions_of_notes_user_has_access = super().get_queryset()
+    return permissions_of_notes_user_has_access.filter(data__note__is_deleted=False)
 
 class ListDeletedNoteView(FilterNoteBaseView):
   template_name = 'notes/notes.html'
@@ -128,9 +128,11 @@ class ListDeletedNoteView(FilterNoteBaseView):
   deactivate = True
 
   def get_queryset(self):
-    user_notes_permissions = super().get_queryset()
-    user_deleted_notes_permissions = user_notes_permissions.filter(data__note__is_deleted=True)
-    return user_deleted_notes_permissions
+    permissions_of_notes_user_has_access = super().get_queryset()
+    permissions_of_deleted_notes_user_has_access = permissions_of_notes_user_has_access.filter(
+      data__note__is_deleted=True
+    )
+    return permissions_of_deleted_notes_user_has_access
   
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
@@ -169,46 +171,57 @@ class ListFavoriteNoteView(FilterNoteBaseView):
   title = "Starred"
 
   def get_queryset(self):
-    user_notes_permissions = super().get_queryset()
-    user_active_notes_permissions = user_notes_permissions.filter(data__note__is_deleted=False)
+    permissions_of_notes_user_has_access = super().get_queryset()
+    permissions_of_non_deleted_notes_user_has_access = permissions_of_notes_user_has_access.filter(
+      data__note__is_deleted=False
+    )
 
-    liked_notes_permissions_ids = []
+    permissions_ids_of_notes_user_has_liked = []
 
-    for permission in user_active_notes_permissions:
+    for permission in permissions_of_non_deleted_notes_user_has_access:
       if permission.data.note.like_set.filter(user=self.request.user).exists():
-        liked_notes_permissions_ids.append(permission.id)
+        permissions_ids_of_notes_user_has_liked.append(permission.id)
 
-    return user_active_notes_permissions.filter(id__in=liked_notes_permissions_ids)
+    return permissions_of_non_deleted_notes_user_has_access.filter(
+      id__in=permissions_ids_of_notes_user_has_liked
+    )
 
 class ListTagNotesView(FilterNoteBaseView):
   template_name = 'notes/notes.html'
   paginate_by = 20
 
   def get_queryset(self):
-    user_notes_permissions = super().get_queryset()
+    permissions_of_notes_user_has_access = super().get_queryset()
 
     tag = get_object_or_404(
       Tag.objects.filter(created_by=self.request.user), id=self.kwargs.get('id')
     )
     self.title = tag.title
 
-    return user_notes_permissions.filter(data__note__is_deleted=False, data__note__tags__id=tag.id)
+    return permissions_of_notes_user_has_access.filter(
+      data__note__is_deleted=False, data__note__tags__id=tag.id
+    )
 
 class ListFolderNotesView(FilterNoteBaseView):
   template_name = 'notes/notes.html'
   paginate_by = 20
 
   def get_queryset(self):
+    folder = get_object_or_404(
+      Folders.objects.filter(id=self.kwargs.get('id')), id=self.kwargs.get('id')
+    )
+
     permission_exists = Permission.objects.filter(
       user=self.request.user, data__type=DataType.FOLDER, data__id=self.kwargs.get('id')
     ).exists()
     if permission_exists:
-      user_notes_permissions = super().get_queryset()
+      permissions_of_notes_user_has_access = super().get_queryset()
 
-      folder = Folders.objects.get(id=self.kwargs.get('id'))
       self.title = folder.title
 
-      return user_notes_permissions.filter(data__note__is_deleted=False, data__note__folder=folder)
+      return permissions_of_notes_user_has_access.filter(
+        data__note__is_deleted=False, data__note__folder=folder
+      )
     raise PermissionDenied("You do not have permission to access this folder")
 
   def get_context_data(self, **kwargs):
@@ -227,7 +240,7 @@ class ListSharedNoteView(FilterNoteBaseView):
   title = "Shared"
 
   def get_queryset(self):
-    user_notes_permissions = super().get_queryset()
-    return user_notes_permissions.filter(data__note__is_deleted=False).filter(
+    permissions_of_notes_user_has_access = super().get_queryset()
+    return permissions_of_notes_user_has_access.filter(data__note__is_deleted=False).filter(
       Q(type=PermissionType.EDITOR) | Q(type=PermissionType.READER)
     )

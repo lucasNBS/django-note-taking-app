@@ -33,6 +33,11 @@ class BaseAccess(permissions.BasePermission):
       choices.PermissionType.EDITOR: False,
       choices.PermissionType.CREATOR: True,
     },
+    'OPTIONS': {
+      choices.PermissionType.READER: True,
+      choices.PermissionType.EDITOR: True,
+      choices.PermissionType.CREATOR: True,
+    },
   }
 
   def _can_perform_action(self, request, permission):

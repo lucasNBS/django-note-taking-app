@@ -29,7 +29,6 @@ class FilterNoteBaseView(BaseContext, ListView):
 
     return user_permissions.order_by('data__note__created_at')
 
-  
   def get_context_data(self, **kwargs):
     request = self.request.GET.copy()
     context = super().get_context_data(**kwargs)

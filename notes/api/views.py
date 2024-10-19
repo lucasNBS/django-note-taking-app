@@ -103,9 +103,11 @@ class NotesView(viewsets.ModelViewSet):
   def folder(self, request, pk=None):
     user = get_user(request)
 
-    permission = Permission.objects.filter(user=user, data__id=int(pk), data__type=DataType.FOLDER)
+    folder_permission = Permission.objects.filter(
+      user=user, data__id=int(pk), data__type=DataType.FOLDER
+    )
 
-    if not permission.exists():
+    if not folder_permission.exists():
       raise PermissionDenied("You do not have access to this folder")
 
     notes_user_has_access = self._get_notes_user_has_access(request)
@@ -175,7 +177,6 @@ class NotesView(viewsets.ModelViewSet):
     user = get_user(request)
     response = super().create(request)
     note = self.queryset.get(id=response.data['id'])
-    Permission.objects.create(data=note, user=user, type=PermissionType.CREATOR)
     return response
 
   def update(self, request, *args, **kwargs):

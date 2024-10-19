@@ -7,6 +7,7 @@ from folders.models import Folders
 from folders.utils import is_general_folder
 
 from ..models import Note
+from .. import utils
 
 class NoteSerializer(serializers.ModelSerializer):
   class Meta:
@@ -24,26 +25,31 @@ class NoteSerializer(serializers.ModelSerializer):
       },
     }
 
-  def save(self):
+  def create(self, validated_data):
+    user = get_user(self.context['request'])
+    tags = validated_data.pop("tags")
+
+    instance = Note(**validated_data)
+    instance.save()
+    utils.create_permission_to_note_user_has_just_created(instance, user)
+    instance.tags.set(tags)
+    return instance
+
+  def validate_tags(self, tags):
     user = get_user(self.context['request'])
 
-    tags = self.validated_data.get("tags", [])
-    self._validate_tags(tags, user)
-
-    folder = self.validated_data.get("folder", None)
-    self._validate_folder(folder, user)
-
-    super().save()
-
-  def _validate_tags(self, tags, user):
     for tag in tags:
       if tag.created_by != user:
         raise exceptions.PermissionDenied("You do not have access to the selected tags")
 
-  def _validate_folder(self, folder, user):
+    return tags
+
+  def validate_folder(self, folder):
+    user = get_user(self.context['request'])
+
     # Allow user to create notes in 'General' folder
     if is_general_folder(folder):
-      return
+      return folder
 
     user_permission_to_folder = models.Permission.objects.filter(user=user, data=folder).first()
     if not user_permission_to_folder:
@@ -53,3 +59,5 @@ class NoteSerializer(serializers.ModelSerializer):
         raise exceptions.PermissionDenied(
           "You do not have permission to create notes in this folder"
         )
+
+    return folder

@@ -7,6 +7,7 @@ from folders.utils import is_general_folder
 from permissions.models import Permission
 from permissions.choices import PermissionType
 from core import widgets, choices
+from . import utils
 
 class NoteForm(forms.ModelForm):
   title = forms.CharField(widget=widgets.InputField(label="Title"))
@@ -62,7 +63,7 @@ class NoteForm(forms.ModelForm):
       raise ValidationError("Max length is 200")
     return description
 
-  def _handle_alter_permission_from_previous_folder(
+  def _remove_note_access_from_previous_folder(
     self, previous_note_instance, previous_folder_permissions
   ):
     for folder_permission in previous_folder_permissions:
@@ -72,7 +73,7 @@ class NoteForm(forms.ModelForm):
       if note_previous_permission:
         note_previous_permission.delete()
 
-  def _handle_alter_permission_from_new_folder(
+  def _create_note_access_to_new_folder(
     self, new_note_instance, new_folder_permissions
   ):
     for folder_permission in new_folder_permissions:
@@ -85,40 +86,39 @@ class NoteForm(forms.ModelForm):
         )
 
   def _handle_alter_permission_when_folder_change(self, previous_note_instance, new_note_instance):
-    previous_folder_permissions = Permission.objects.filter(
+    previous_folder_permissions_but_creator = Permission.objects.filter(
       data=previous_note_instance.folder
     ).exclude(type=PermissionType.CREATOR)
 
-    if previous_folder_permissions and previous_note_instance.folder.title != "General":
-      self._handle_alter_permission_from_previous_folder(
-        previous_note_instance, previous_folder_permissions
+    if previous_folder_permissions_but_creator and previous_note_instance.folder.title != "General":
+      self._remove_note_access_from_previous_folder(
+        previous_note_instance, previous_folder_permissions_but_creator
       )
 
-    new_folder_permissions = Permission.objects.filter(
+    new_folder_permissions_but_creator = Permission.objects.filter(
       data=new_note_instance.folder
     ).exclude(type=PermissionType.CREATOR)
-    
-    if new_folder_permissions and new_note_instance.folder.title != "General":
-      self._handle_alter_permission_from_new_folder(
-        new_note_instance, new_folder_permissions
+
+    if new_folder_permissions_but_creator and new_note_instance.folder.title != "General":
+      self._create_note_access_to_new_folder(
+        new_note_instance, new_folder_permissions_but_creator
       )
 
   def save(self, *args, **kwargs):
-    created = True if self.instance.id else False
+    already_created = True if self.instance.id else False
 
-    if created:
+    if already_created:
       previous_note_instance = Note.objects.get(id=self.instance.id)
       if self.instance.folder != previous_note_instance.folder:
         self._handle_alter_permission_when_folder_change(previous_note_instance, self.instance)
 
     save = super().save(*args, **kwargs)
 
-    if self.creator is not None and not created:
-      Permission.objects.create(
-        user=self.creator, type=PermissionType.CREATOR, data=self.instance
-      )
+    if self.creator is not None and not already_created:
+      utils.create_permission_to_note_user_has_just_created(self.instance, self.creator)
 
     return save
+
 
 class UpdateSharedNoteForm(forms.ModelForm):
   title = forms.CharField(widget=widgets.InputField(label="Title"))
@@ -158,8 +158,6 @@ class UpdateSharedNoteForm(forms.ModelForm):
     return description
   
   def save(self, *args, **kwargs):
-    if self.creator is not None:
-      self.instance.created_by = self.creator
     return super().save(*args, **kwargs)
 
 
