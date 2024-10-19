@@ -84,11 +84,17 @@ def autocomplete_folder_view(request):
     Q(data__title__icontains=search) | Q(data__title__startswith=search)
   ).values_list("data__id", flat=True)
 
-  folders = Folders.objects.filter(id__in=folders_user_has_access_ids)
+  folders_user_has_access_as_creator_or_reader = Folders.objects.filter(
+    id__in=folders_user_has_access_ids
+  )
 
   if re.match(search, "General", re.I):
-    folders = include_general_folder_in_queryset(folders)
+    folders_user_has_access_as_creator_or_reader = include_general_folder_in_queryset(
+      folders_user_has_access_as_creator_or_reader
+    )
 
-  response = [{'title': folder.title, 'id': folder.id} for folder in folders][:limit]
+  response = [
+    {'title': folder.title, 'id': folder.id} for folder in folders_user_has_access_as_creator_or_reader
+  ][:limit]
 
   return JsonResponse(response, safe=False)

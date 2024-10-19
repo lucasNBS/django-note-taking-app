@@ -4,6 +4,7 @@ from accounts.api.utils import get_user
 from permissions import models, choices
 
 from ..models import Folders
+from .. import utils
 
 class FoldersSerializer(serializers.ModelSerializer):
   class Meta:
@@ -18,9 +19,7 @@ class FoldersSerializer(serializers.ModelSerializer):
   def create(self, validated_data):
     instance = self.Meta.model(**validated_data)
     instance.save()
-    models.Permission.objects.create(
-      user=get_user(self.context['request']),
-      type=choices.PermissionType.CREATOR,
-      data=instance,
+    utils.create_permission_to_folder_user_has_just_created(
+      instance, get_user(self.context['request'])
     )
     return instance

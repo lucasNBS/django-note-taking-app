@@ -19,10 +19,10 @@ class FoldersView(viewsets.ModelViewSet):
 
   def list(self, request):
     user = get_user(request)
-    folders_user_has_access_id = Permission.objects.filter(
+    permissions_ids_of_folders_user_has_access = Permission.objects.filter(
       user=user, data__type=DataType.FOLDER
     ).values_list("data__id", flat=True)
-    queryset = Folders.objects.filter(id__in=folders_user_has_access_id)
+    queryset = Folders.objects.filter(id__in=permissions_ids_of_folders_user_has_access)
 
     page = self.paginate_queryset(queryset)
     if page is not None:
