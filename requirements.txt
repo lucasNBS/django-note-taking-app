@@ -1,8 +1,17 @@
 asgiref==3.8.1
+cfgv==3.4.0
+distlib==0.3.9
 Django==5.0.7
 django-environ==0.11.2
 djangorestframework==3.15.2
+filelock==3.16.1
+identify==2.6.1
 Markdown==3.6
+nodeenv==1.9.1
+platformdirs==4.3.6
+pre_commit==4.0.1
 psycopg2-binary==2.9.9
 PyJWT==2.9.0
+PyYAML==6.0.2
 sqlparse==0.5.1
+virtualenv==20.27.0
