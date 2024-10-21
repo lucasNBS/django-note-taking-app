@@ -88,7 +88,7 @@
     </div>
   </div>
   <p class="text-xs max-h-48 overflow-hidden">{{ note.data.note.description }}</p>
-  <div class="flex gap-2 overflow-hidden">
+  <div class="flex gap-2 overflow-hidden flex-wrap">
     {% for tag in note.data.note.tags.all %}
       {% include 'tags/_tag.html' %}
     {% endfor %}
